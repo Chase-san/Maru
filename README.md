@@ -29,3 +29,8 @@ Well actually Maru is my personal use library where I stick any functions I migh
 
 #### What's different about it?
 Most of the classes have very few dependencies on each other. Meaning you don't need the entire library to use one of the classes. At most you may need one or two others. This is a personal preference.
+
+This means you can pick and choose which classes to use. You have my full permissions to do so.
+
+#### I hate to ask, but what is the license on this?
+ZLIB License, which basically means you can use it however you like, as long as you don't claim you wrote it. I don't like copyrights or copylefts.
