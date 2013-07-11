@@ -1,6 +1,9 @@
 package org.csdgn.maru.util;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Some basic methods to allow easy escaping and unescaping of strings. 
@@ -183,5 +186,62 @@ public class StringUtils {
 		}
 		output.add(src.substring(lindex));
 		return output.toArray(new String[output.size()]);
+	}
+	
+	public static final Iterator<Character> stringIterator(final String string) {
+		// Ensure the error is found as soon as possible.
+		if(string == null) throw new NullPointerException();
+		return new Iterator<Character>() {
+			private int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < string.length();
+			}
+
+			@Override
+			public Character next() {
+				/*
+				 * Throw NoSuchElementException as defined by the Iterator
+				 * contract, not IndexOutOfBoundsException.
+				 */
+				if(!hasNext()) throw new NoSuchElementException();
+				return string.charAt(index++);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+	
+	public static byte[] hexToBytes(String hex) {
+		hex = hex.trim();
+		if (hex.charAt(1) == 'x')
+			hex = hex.substring(2);
+		// consume two characters at a time...
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Iterator<Character> it = StringUtils.stringIterator(hex);
+		while (it.hasNext()) {
+			baos.write(hexToByte(it.next(), it.next()));
+		}
+		return baos.toByteArray();
+	}
+
+	private static int hexToByte(char c1, char c2) {
+		// nibble to numeric
+		int n0 = (int) c1 - 48;
+		int n1 = (int) c2 - 48;
+		if (n0 > 9)
+			n0 -= 7;
+		if (n0 > 15)
+			n0 -= 32;
+		if (n1 > 9)
+			n1 -= 7;
+		if (n1 > 15)
+			n1 -= 32;
+
+		return (n0 << 4) | n1;
 	}
 }
