@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
  */
 public class AsciiArt {
 	private static final Font font = new Font("Consolas", Font.PLAIN, 64);
+	@SuppressWarnings("deprecation")
 	private static final FontMetrics fm = Toolkit.getDefaultToolkit()
 			.getFontMetrics(font);
 
