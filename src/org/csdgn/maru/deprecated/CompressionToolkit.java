@@ -34,14 +34,27 @@ import java.util.zip.InflaterOutputStream;
 
 /**
  * This package may be removed without warning!
+ * 
  * @author Robert Maupin
- *
+ * 
  */
 @Deprecated
 public class CompressionToolkit {
-	private CompressionToolkit() {}
 	private static final int IO_BUFFER_SIZE = 8192;
-	
+
+	/**
+	 * A one stop byte array deflater method.
+	 */
+	public static final byte[] deflate(byte[] in, Deflater deflater)
+			throws IOException {
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		DeflaterOutputStream dbuf = new DeflaterOutputStream(buf, deflater);
+		dbuf.write(in);
+		dbuf.finish();
+		dbuf.close();
+		return buf.toByteArray();
+	}
+
 	/**
 	 * A one stop byte array gzip method.
 	 */
@@ -53,7 +66,20 @@ public class CompressionToolkit {
 		gzip.close();
 		return buf.toByteArray();
 	}
-	
+
+	/**
+	 * A one stop byte array inflater method.
+	 */
+	public static final byte[] inflate(byte[] in, Inflater inflater)
+			throws IOException {
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		InflaterOutputStream ibuf = new InflaterOutputStream(buf, inflater);
+		ibuf.write(in);
+		ibuf.finish();
+		ibuf.close();
+		return buf.toByteArray();
+	}
+
 	/**
 	 * A one stop byte array ungzip method.
 	 */
@@ -63,33 +89,12 @@ public class CompressionToolkit {
 		ByteArrayOutputStream obuf = new ByteArrayOutputStream();
 		byte[] buffer = new byte[IO_BUFFER_SIZE];
 		int size = 0;
-		while((size=gzip.read(buffer)) != -1) {
-			obuf.write(buffer,0,size);
+		while ((size = gzip.read(buffer)) != -1) {
+			obuf.write(buffer, 0, size);
 		}
 		return obuf.toByteArray();
 	}
-	
-	/**
-	 * A one stop byte array deflater method.
-	 */
-	public static final byte[] deflate(byte[] in, Deflater deflater) throws IOException {
-		ByteArrayOutputStream buf = new ByteArrayOutputStream();
-		DeflaterOutputStream dbuf = new DeflaterOutputStream(buf,deflater);
-		dbuf.write(in);
-		dbuf.finish();
-		dbuf.close();
-		return buf.toByteArray();
-	}
-	
-	/**
-	 * A one stop byte array inflater method.
-	 */
-	public static final byte[] inflate(byte[] in, Inflater inflater) throws IOException {
-		ByteArrayOutputStream buf = new ByteArrayOutputStream();
-		InflaterOutputStream ibuf = new InflaterOutputStream(buf,inflater);
-		ibuf.write(in);
-		ibuf.finish();
-		ibuf.close();
-		return buf.toByteArray();
+
+	private CompressionToolkit() {
 	}
 }

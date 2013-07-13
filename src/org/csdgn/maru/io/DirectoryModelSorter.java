@@ -26,13 +26,16 @@ import java.io.File;
 
 /**
  * Defines a a directory sorter.
+ * 
  * @author Robert Maupin
- *
+ * 
  */
 public interface DirectoryModelSorter {
 	/**
 	 * Reorders the files in the array according to the sort criteria.
-	 * @param files Array of files.
+	 * 
+	 * @param files
+	 *            Array of files.
 	 */
 	public void sortFileArray(File[] files);
 }

@@ -32,32 +32,44 @@ import java.io.Reader;
 public abstract class ReaderLoader {
 	private static final int IO_BUFFER_SIZE = 16384;
 	private final Reader input;
-	
-	/** 
+
+	/**
 	 * @param input
 	 */
 	public ReaderLoader(Reader input) {
 		this.input = input;
 	}
-	
+
+	/**
+	 * Closes the underlying stream.
+	 * 
+	 * @throws IOException
+	 */
+	public void close() throws IOException {
+		input.close();
+	}
+
 	/**
 	 * Called when an array of bytes is read.
+	 * 
 	 * @param read
 	 * @param length
 	 */
 	public void onCharacterArrayRead(char[] read, int length) {
-		for(int i=0;i < length; ++i)
+		for (int i = 0; i < length; ++i) {
 			onCharacterRead(read[i]);
+		}
 	}
-	
+
 	/**
 	 * Called when a byte is read.
+	 * 
 	 * @param input
 	 */
 	public abstract void onCharacterRead(char input);
-	
+
 	/**
-	 * @throws IOException 
+	 * @throws IOException
 	 * 
 	 */
 	public void readAll() throws IOException {
@@ -65,32 +77,28 @@ public abstract class ReaderLoader {
 			final BufferedReader input = new BufferedReader(this.input);
 			final char[] read = new char[IO_BUFFER_SIZE];
 			int r = 0;
-			while ((r = input.read(read, 0, IO_BUFFER_SIZE)) != -1)
+			while ((r = input.read(read, 0, IO_BUFFER_SIZE)) != -1) {
 				onCharacterArrayRead(read, r);
-		} 
+			}
+		}
 	}
-	
+
 	/**
-	 * @throws IOException 
+	 * @throws IOException
 	 * 
 	 */
 	public void readAllAndClose() throws IOException {
-		if (input != null) try {
-			final BufferedReader input = new BufferedReader(this.input);
-			final char[] read = new char[IO_BUFFER_SIZE];
-			int r = 0;
-			while ((r = input.read(read, 0, IO_BUFFER_SIZE)) != -1)
-				onCharacterArrayRead(read, r);
-		}  finally {
-			this.input.close();
+		if (input != null) {
+			try {
+				final BufferedReader input = new BufferedReader(this.input);
+				final char[] read = new char[IO_BUFFER_SIZE];
+				int r = 0;
+				while ((r = input.read(read, 0, IO_BUFFER_SIZE)) != -1) {
+					onCharacterArrayRead(read, r);
+				}
+			} finally {
+				input.close();
+			}
 		}
-	}
-	
-	/**
-	 * Closes the underlying stream.
-	 * @throws IOException
-	 */
-	public void close() throws IOException {
-		this.input.close();
 	}
 }

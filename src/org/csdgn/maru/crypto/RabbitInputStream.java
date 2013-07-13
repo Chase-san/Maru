@@ -31,105 +31,134 @@ import java.io.InputStream;
  */
 public class RabbitInputStream extends FilterInputStream {
 	public final Rabbit rabbit;
+
 	/**
 	 * zero key stream
 	 */
 	public RabbitInputStream(InputStream in) {
 		super(in);
 		rabbit = new Rabbit();
-		rabbit.setupKey(new short[]{0,0,0,0,0,0,0,0});
+		rabbit.setupKey(new short[] { 0, 0, 0, 0, 0, 0, 0, 0 });
 	}
+
 	/**
-	 * @param key 16 bytes
+	 * @param key
+	 *            16 bytes
 	 */
 	public RabbitInputStream(InputStream in, byte[] key) {
 		super(in);
-		if(key.length != 16)
-			throw new IllegalArgumentException("A byte array key must have 16 entries.");
+		if (key.length != 16) {
+			throw new IllegalArgumentException(
+					"A byte array key must have 16 entries.");
+		}
 		rabbit = new Rabbit();
 		rabbit.setupKey(key);
 	}
+
 	/**
-	 * @param key 16 bytes
-	 * @param iv 8 bytes
+	 * @param key
+	 *            16 bytes
+	 * @param iv
+	 *            8 bytes
 	 */
 	public RabbitInputStream(InputStream in, byte[] key, byte[] iv) {
 		super(in);
-		if(key.length != 16)
-			throw new IllegalArgumentException("A byte array key must have 16 entries.");
-		if(iv.length != 8)
-			throw new IllegalArgumentException("A byte array iv must have 8 entries.");
+		if (key.length != 16) {
+			throw new IllegalArgumentException(
+					"A byte array key must have 16 entries.");
+		}
+		if (iv.length != 8) {
+			throw new IllegalArgumentException(
+					"A byte array iv must have 8 entries.");
+		}
 		rabbit = new Rabbit();
 		rabbit.setupKey(key);
 		rabbit.setupIV(iv);
 	}
+
 	/**
-	 * @param key 8 shorts
+	 * @param key
+	 *            8 shorts
 	 */
 	public RabbitInputStream(InputStream in, short[] key) {
 		super(in);
-		if(key.length != 8)
-			throw new IllegalArgumentException("A short array key must have 8 entries.");
+		if (key.length != 8) {
+			throw new IllegalArgumentException(
+					"A short array key must have 8 entries.");
+		}
 		rabbit = new Rabbit();
 		rabbit.setupKey(key);
 	}
+
 	/**
-	 * @param key 8 shorts
-	 * @param iv 4 shorts
+	 * @param key
+	 *            8 shorts
+	 * @param iv
+	 *            4 shorts
 	 */
 	public RabbitInputStream(InputStream in, short[] key, short[] iv) {
 		super(in);
-		if(key.length != 8)
-			throw new IllegalArgumentException("A short array key must have 8 entries.");
-		if(iv.length != 4)
-			throw new IllegalArgumentException("A short array iv must have 4 entries.");
+		if (key.length != 8) {
+			throw new IllegalArgumentException(
+					"A short array key must have 8 entries.");
+		}
+		if (iv.length != 4) {
+			throw new IllegalArgumentException(
+					"A short array iv must have 4 entries.");
+		}
 		rabbit = new Rabbit();
 		rabbit.setupKey(key);
 		rabbit.setupIV(iv);
 	}
-	
+
 	/**
 	 * RabbitInputStream does not support marks
 	 */
+	@Override
 	public void mark(int readLimit) {
-		throw new UnsupportedOperationException("RabbitInputStream does not support mark(int).");
+		throw new UnsupportedOperationException(
+				"RabbitInputStream does not support mark(int).");
 	}
-	
+
 	/**
 	 * RabbitInputStream does not support marks
 	 */
+	@Override
 	public boolean markSupported() {
 		return false;
 	}
-	
+
+	@Override
+	public int read() throws IOException {
+		int n = in.read();
+		if (n == -1) {
+			return -1;
+		}
+		byte[] data = new byte[] { (byte) n };
+		rabbit.crypt(data);
+		return data[0];
+	}
+
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		len = in.read(b, off, len);
 		rabbit.crypt(b, off, len);
 		return len;
 	}
-	
-	@Override
-	public int read() throws IOException {
-		int n = in.read();
-		if(n == -1)
-			return -1;
-		byte[] data = new byte[]{(byte)n};
-		rabbit.crypt(data);
-		return data[0];
-	}
-	
+
 	/**
 	 * RabbitInputStream does not support marks
 	 */
+	@Override
 	public void reset() {
-		throw new UnsupportedOperationException("RabbitInputStream does not support reset().");
+		throw new UnsupportedOperationException(
+				"RabbitInputStream does not support reset().");
 	}
-	
+
 	@Override
 	public long skip(long n) throws IOException {
 		long skipped = in.skip(n);
-		//skip this number in Rabbit as well
+		// skip this number in Rabbit as well
 		rabbit.skip(skipped);
 		return skipped;
 	}

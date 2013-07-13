@@ -39,17 +39,21 @@ public class BitMap {
 
 	public BitMap(final int width, final int height) {
 		map = new BitSet[height];
-		for(int i = 0; i < height; ++i)
+		for (int i = 0; i < height; ++i) {
 			map[i] = new BitSet(width);
+		}
 	}
 
 	public void and(final BitMap bm) {
-		for(int i = 0; i < map.length && i < bm.map.length; ++i)
+		for (int i = 0; (i < map.length) && (i < bm.map.length); ++i) {
 			map[i].and(bm.map[i]);
+		}
 	}
 
 	public boolean at(final int x, final int y) {
-		if(!valid(x, y)) return false;
+		if (!valid(x, y)) {
+			return false;
+		}
 		return map[y].at(x);
 	}
 
@@ -57,26 +61,38 @@ public class BitMap {
 	 * Runs a (slow) path finding routine to see if you can get to the second
 	 * set of coordinates from the first. Only works if both are spots are 'on'.
 	 */
-	public boolean canPathFind(final int x0, final int y0, final int x1, final int y1) {
-		if(!at(x0, y0) || !at(x1, y1)) return false;
+	public boolean canPathFind(final int x0, final int y0, final int x1,
+			final int y1) {
+		if (!at(x0, y0) || !at(x1, y1)) {
+			return false;
+		}
 		final HashSet<Point> open = new HashSet<Point>();
 		final HashSet<Point> closed = new HashSet<Point>();
 		open.add(new Point(x0, y0));
-		while(true) {
+		while (true) {
 			Point b = null;
 			int v = Integer.MAX_VALUE;
-			for(final Point p : open) {
-				final int h = (x1 - p.x) * (x1 - p.x) + (y1 - p.y) * (y1 - p.y);
-				if(h < v) {
+			for (final Point p : open) {
+				final int h = ((x1 - p.x) * (x1 - p.x))
+						+ ((y1 - p.y) * (y1 - p.y));
+				if (h < v) {
 					b = p;
 					v = h;
 				}
 			}
-			if(b == null) return false;
-			if(b.x == x1 && b.y == y1) return true;
-			for(final Point p : pathN(b)) {
-				if(!at(p.x, p.y)) continue;
-				if(!closed.contains(p) && !open.contains(p)) open.add(p);
+			if (b == null) {
+				return false;
+			}
+			if ((b.x == x1) && (b.y == y1)) {
+				return true;
+			}
+			for (final Point p : pathN(b)) {
+				if (!at(p.x, p.y)) {
+					continue;
+				}
+				if (!closed.contains(p) && !open.contains(p)) {
+					open.add(p);
+				}
 			}
 			open.remove(b);
 			closed.add(b);
@@ -88,8 +104,9 @@ public class BitMap {
 	 */
 	public BitSet combine() {
 		final BitSet set = new BitSet(map[0].length());
-		for(final BitSet element : map)
+		for (final BitSet element : map) {
 			set.or(element);
+		}
 		return set;
 	}
 
@@ -97,7 +114,8 @@ public class BitMap {
 	 * @return number of its 4 neighbors are active.
 	 */
 	public int edges(final int x, final int y) {
-		return (at(x - 1, y) ? 1 : 0) + (at(x + 1, y) ? 1 : 0) + (at(x, y - 1) ? 1 : 0) + (at(x, y + 1) ? 1 : 0);
+		return (at(x - 1, y) ? 1 : 0) + (at(x + 1, y) ? 1 : 0)
+				+ (at(x, y - 1) ? 1 : 0) + (at(x, y + 1) ? 1 : 0);
 	}
 
 	public int height() {
@@ -105,13 +123,14 @@ public class BitMap {
 	}
 
 	public void or(final BitMap bm) {
-		for(int i = 0; i < map.length && i < bm.map.length; ++i)
+		for (int i = 0; (i < map.length) && (i < bm.map.length); ++i) {
 			map[i].or(bm.map[i]);
+		}
 	}
 
 	private Point[] pathN(final Point p) {
-		return new Point[]
-			{ new Point(p.x - 1, p.y), new Point(p.x + 1, p.y), new Point(p.x, p.y - 1), new Point(p.x, p.y + 1) };
+		return new Point[] { new Point(p.x - 1, p.y), new Point(p.x + 1, p.y),
+				new Point(p.x, p.y - 1), new Point(p.x, p.y + 1) };
 	}
 
 	public void set(final int x, final int y) {
@@ -119,10 +138,15 @@ public class BitMap {
 	}
 
 	public BitMap snip(final int x0, final int y0, final int x1, final int y1) {
-		if(x0 > x1) if(y0 > y1) return snip(x1, y1, x0, y0);
-		else return snip(x1, y0, x0, y1);
-		final BitMap map = new BitMap(y1 - y0 + 1);
-		for(int y = y0; y <= y1; ++y) {
+		if (x0 > x1) {
+			if (y0 > y1) {
+				return snip(x1, y1, x0, y0);
+			} else {
+				return snip(x1, y0, x0, y1);
+			}
+		}
+		final BitMap map = new BitMap((y1 - y0) + 1);
+		for (int y = y0; y <= y1; ++y) {
 			final int y2 = y - y0;
 			map.map[y2] = this.map[y].snip(x0, x1);
 		}
@@ -131,7 +155,7 @@ public class BitMap {
 
 	public String toBinaryString() {
 		final StringBuilder sb = new StringBuilder();
-		for(final BitSet element : map) {
+		for (final BitSet element : map) {
 			sb.append(element.toPaddedBinaryString());
 			sb.append('\n');
 		}
@@ -143,8 +167,12 @@ public class BitMap {
 	}
 
 	public boolean valid(final int x, final int y) {
-		if(x < 0 || y < 0) return false;
-		if(y >= map.length || x >= map[y].length()) return false;
+		if ((x < 0) || (y < 0)) {
+			return false;
+		}
+		if ((y >= map.length) || (x >= map[y].length())) {
+			return false;
+		}
 		return true;
 	}
 
@@ -153,7 +181,8 @@ public class BitMap {
 	}
 
 	public void xor(final BitMap bm) {
-		for(int i = 0; i < map.length && i < bm.map.length; ++i)
+		for (int i = 0; (i < map.length) && (i < bm.map.length); ++i) {
 			map[i].xor(bm.map[i]);
+		}
 	}
 }

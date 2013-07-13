@@ -40,10 +40,31 @@ public class StackedLayout implements LayoutManager, LayoutManager2 {
 	private ArrayList<Component> components = new ArrayList<Component>();
 
 	@Override
+	public void addLayoutComponent(Component c, Object o) {
+		// we honestly don't care what was passed
+		addLayoutComponent((String) null, c);
+	}
+
+	@Override
 	public void addLayoutComponent(String name, Component comp) {
 		synchronized (comp.getTreeLock()) {
 			components.add(comp);
 		}
+	}
+
+	@Override
+	public float getLayoutAlignmentX(Container c) {
+		return 0.5f;
+	}
+
+	@Override
+	public float getLayoutAlignmentY(Container c) {
+		return 0.5f;
+	}
+
+	@Override
+	public void invalidateLayout(Container c) {
+		// done
 	}
 
 	@Override
@@ -58,6 +79,22 @@ public class StackedLayout implements LayoutManager, LayoutManager2 {
 			for (Component c : components) {
 				c.setBounds(left, top, right - left, bottom - top);
 			}
+		}
+	}
+
+	@Override
+	public Dimension maximumLayoutSize(Container target) {
+		synchronized (target.getTreeLock()) {
+			Dimension dim = new Dimension(0, 0);
+			for (Component c : components) {
+				Dimension d = c.getMaximumSize();
+				dim.width = Math.max(d.width, dim.width);
+				dim.height = Math.max(d.height, dim.height);
+			}
+			Insets insets = target.getInsets();
+			dim.width += insets.left + insets.right;
+			dim.height += insets.top + insets.bottom;
+			return dim;
 		}
 	}
 
@@ -97,43 +134,6 @@ public class StackedLayout implements LayoutManager, LayoutManager2 {
 	public void removeLayoutComponent(Component comp) {
 		synchronized (comp.getTreeLock()) {
 			components.remove(comp);
-		}
-	}
-
-	@Override
-	public void addLayoutComponent(Component c, Object o) {
-		//we honestly don't care what was passed
-		addLayoutComponent((String)null,c);
-	}
-
-	@Override
-	public float getLayoutAlignmentX(Container c) {
-		return 0.5f;
-	}
-
-	@Override
-	public float getLayoutAlignmentY(Container c) {
-		return 0.5f;
-	}
-
-	@Override
-	public void invalidateLayout(Container c) {
-		//done
-	}
-
-	@Override
-	public Dimension maximumLayoutSize(Container target) {
-		synchronized (target.getTreeLock()) {
-			Dimension dim = new Dimension(0, 0);
-			for (Component c : components) {
-				Dimension d = c.getMaximumSize();
-				dim.width = Math.max(d.width, dim.width);
-				dim.height = Math.max(d.height, dim.height);
-			}
-			Insets insets = target.getInsets();
-			dim.width += insets.left + insets.right;
-			dim.height += insets.top + insets.bottom;
-			return dim;
 		}
 	}
 }

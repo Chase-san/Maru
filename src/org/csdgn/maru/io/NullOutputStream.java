@@ -26,12 +26,27 @@ import java.io.OutputStream;
 
 /**
  * Defines a null output stream. All data written to this stream is discarded.
+ * 
  * @author Robert Maupin
  */
 public class NullOutputStream extends OutputStream {
-	public void close() {}
-	public void flush() {}
-	public void write(byte[] b) {}
-	public void write(byte[] b, int off, int len) {}
-	public void write(int b) {}
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public void flush() {
+	}
+
+	@Override
+	public void write(byte[] b) {
+	}
+
+	@Override
+	public void write(byte[] b, int off, int len) {
+	}
+
+	@Override
+	public void write(int b) {
+	}
 }

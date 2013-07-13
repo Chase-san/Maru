@@ -39,76 +39,23 @@ public class DirectoryModel extends Observable {
 	private File[] files;
 
 	/**
-	 * Sets the directory to the given directory
-	 * 
-	 * @param filedir
-	 *            The directory or a file within the desired directory to load into the model.
-	 * @throws FileNotFoundException
-	 *             If the directory does not exist.
-	 */
-	public void loadDirectory(File filedir) throws FileNotFoundException {
-		if(filedir == null) {
-			throw new IllegalArgumentException("Argument must not be null.");
-		}
-		if(filedir.isDirectory()) {
-			doLoadDirectory(filedir);
-		} else {
-			doLoadDirectory(filedir.getParentFile());
-		}
-	}
-
-	/**
-	 * Reloads the directory from the filesystem.
-	 * 
-	 * @throws FileNotFoundException
-	 *             If the file does not exist.
-	 */
-	public void reloadDirectory() throws FileNotFoundException {
-		if(!directory.exists()) {
-			throw new FileNotFoundException("The directory to reload was not found.");
-		}
-		doLoadDirectory(directory);
-	}
-
-	private void doLoadDirectory(File dir) throws FileNotFoundException {
-		if(!dir.exists()) {
-			throw new FileNotFoundException("The directory to load was not found.");
-		}
-		directory = dir;
-		if(filter != null) {
-			files = dir.listFiles(filter);
-		}
-	}
-
-	/**
-	 * Sets the filter for this Directory Model to use. This will filter the
-	 * files in the directory model. Possibly altering the index of files within
-	 * the model.
-	 * 
-	 * @param filter
-	 *            the filter to use for getting a list of files.
-	 */
-	public void setDirectoryFilter(FileFilter filter) {
-		this.filter = filter;
-	}
-
-	/**
 	 * just checks if the directory has been set, if not, throw an exception
 	 */
 	private void checkDirectoryState() {
-		if(files == null) throw new IllegalStateException("A directory has not been set.");
+		if (files == null) {
+			throw new IllegalStateException("A directory has not been set.");
+		}
 	}
 
-	/**
-	 * Sorts the model via the given directory model sorter, which gets direct
-	 * access to the internal file array for sorting.
-	 * 
-	 * @param sorter
-	 *            A directory model sorter to use to sort this directory model.
-	 */
-	public void sort(DirectoryModelSorter sorter) {
-		checkDirectoryState();
-		sorter.sortFileArray(files);
+	private void doLoadDirectory(File dir) throws FileNotFoundException {
+		if (!dir.exists()) {
+			throw new FileNotFoundException(
+					"The directory to load was not found.");
+		}
+		directory = dir;
+		if (filter != null) {
+			files = dir.listFiles(filter);
+		}
 	}
 
 	/**
@@ -139,12 +86,58 @@ public class DirectoryModel extends Observable {
 	public int getFileIndex(File file) {
 		checkDirectoryState();
 		// NOTE A hashmap could make this faster
-		for(int i = 0; i < files.length; ++i) {
-			if(files[i].equals(file)) {
+		for (int i = 0; i < files.length; ++i) {
+			if (files[i].equals(file)) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	/**
+	 * Sets the directory to the given directory
+	 * 
+	 * @param filedir
+	 *            The directory or a file within the desired directory to load
+	 *            into the model.
+	 * @throws FileNotFoundException
+	 *             If the directory does not exist.
+	 */
+	public void loadDirectory(File filedir) throws FileNotFoundException {
+		if (filedir == null) {
+			throw new IllegalArgumentException("Argument must not be null.");
+		}
+		if (filedir.isDirectory()) {
+			doLoadDirectory(filedir);
+		} else {
+			doLoadDirectory(filedir.getParentFile());
+		}
+	}
+
+	/**
+	 * Reloads the directory from the filesystem.
+	 * 
+	 * @throws FileNotFoundException
+	 *             If the file does not exist.
+	 */
+	public void reloadDirectory() throws FileNotFoundException {
+		if (!directory.exists()) {
+			throw new FileNotFoundException(
+					"The directory to reload was not found.");
+		}
+		doLoadDirectory(directory);
+	}
+
+	/**
+	 * Sets the filter for this Directory Model to use. This will filter the
+	 * files in the directory model. Possibly altering the index of files within
+	 * the model.
+	 * 
+	 * @param filter
+	 *            the filter to use for getting a list of files.
+	 */
+	public void setDirectoryFilter(FileFilter filter) {
+		this.filter = filter;
 	}
 
 	/**
@@ -155,5 +148,17 @@ public class DirectoryModel extends Observable {
 	public int size() {
 		checkDirectoryState();
 		return files.length;
+	}
+
+	/**
+	 * Sorts the model via the given directory model sorter, which gets direct
+	 * access to the internal file array for sorting.
+	 * 
+	 * @param sorter
+	 *            A directory model sorter to use to sort this directory model.
+	 */
+	public void sort(DirectoryModelSorter sorter) {
+		checkDirectoryState();
+		sorter.sortFileArray(files);
 	}
 }

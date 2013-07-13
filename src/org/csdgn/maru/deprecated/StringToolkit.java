@@ -62,7 +62,7 @@ public class StringToolkit {
 	 */
 	public static final String convertEOL(final String src, final int style) {
 		String lineEnding = "";
-		switch(style) {
+		switch (style) {
 		case EOL_SYSTEM:
 			lineEnding = System.getProperty("line.separator");
 			break;
@@ -76,55 +76,26 @@ public class StringToolkit {
 			lineEnding = "\n";
 			break;
 		default:
-			throw new IllegalArgumentException("Unknown line break style: " + style);
+			throw new IllegalArgumentException("Unknown line break style: "
+					+ style);
 		}
 		final StringBuilder sb = new StringBuilder();
 		final Iterator<Character> it = stringIterator(src);
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			char c = it.next();
-			if(c == '\r') {
+			if (c == '\r') {
 				sb.append(lineEnding);
-				if(it.hasNext() && (c = it.next()) != '\n') sb.append(c);
+				if (it.hasNext() && ((c = it.next()) != '\n')) {
+					sb.append(c);
+				}
 				continue;
-			} else if(c == '\n') {
+			} else if (c == '\n') {
 				sb.append(lineEnding);
 				continue;
 			}
 			sb.append(c);
 		}
 		return sb.toString();
-	}
-	
-	/**
-	 * Split CSV data values. (Non-Regex)
-	 */
-	public static final String[] splitCSV(final String src) {
-		Iterator<Character> it = stringIterator(src);
-		final ArrayList<String> output = new ArrayList<String>();
-		StringBuilder sb = new StringBuilder();
-		boolean qoute = false;
-		char last = '\0';
-		while(it.hasNext()) {
-			char c = it.next();
-			if(c == '\r' || c == '\n') { break; }
-			if(c == ',' && !qoute) {
-				output.add(sb.toString());
-				sb.setLength(0);
-			} else if(c == '"') {
-				//check if double
-				if(last == '"' && !qoute) {
-					sb.append('"');
-				}
-				qoute = !qoute;
-			} else {
-				sb.append(c);
-			}
-			last = c;
-		}
-		if(sb.length() > 0) {
-			output.add(sb.toString());
-		}
-		return output.toArray(new String[output.size()]);
 	}
 
 	/**
@@ -135,7 +106,7 @@ public class StringToolkit {
 		final ArrayList<String> output = new ArrayList<String>();
 		int index = 0;
 		int lindex = 0;
-		while((index = src.indexOf(delim, lindex)) != -1) {
+		while ((index = src.indexOf(delim, lindex)) != -1) {
 			output.add(src.substring(lindex, index));
 			lindex = index + 1;
 		}
@@ -152,7 +123,7 @@ public class StringToolkit {
 		final int len = delim.length();
 		int index = 0;
 		int lindex = 0;
-		while((index = src.indexOf(delim, lindex)) != -1) {
+		while ((index = src.indexOf(delim, lindex)) != -1) {
 			output.add(src.substring(lindex, index));
 			lindex = index + len;
 		}
@@ -165,8 +136,7 @@ public class StringToolkit {
 	 */
 	public static final String[] fastSplit1(final String src, final char delim) {
 		final int index = src.indexOf(delim);
-		return new String[]
-			{ src.substring(0, index), src.substring(index + 1) };
+		return new String[] { src.substring(0, index), src.substring(index + 1) };
 	}
 
 	/**
@@ -175,8 +145,8 @@ public class StringToolkit {
 	public static final String[] fastSplit1(final String src, final String delim) {
 		final int len = delim.length();
 		final int index = src.indexOf(delim);
-		return new String[]
-			{ src.substring(0, index), src.substring(index + len) };
+		return new String[] { src.substring(0, index),
+				src.substring(index + len) };
 	}
 
 	/**
@@ -185,8 +155,8 @@ public class StringToolkit {
 	public static final String[] fastSplit2(final String src, final char delim) {
 		final int index1 = src.indexOf(delim);
 		final int index2 = src.indexOf(delim, index1 + 1);
-		return new String[]
-			{ src.substring(0, index1), src.substring(index1 + 1, index2), src.substring(index2 + 1) };
+		return new String[] { src.substring(0, index1),
+				src.substring(index1 + 1, index2), src.substring(index2 + 1) };
 	}
 
 	/**
@@ -196,21 +166,24 @@ public class StringToolkit {
 		final int len = delim.length();
 		final int index1 = src.indexOf(delim);
 		final int index2 = src.indexOf(delim, index1 + len);
-		return new String[]
-			{ src.substring(0, index1), src.substring(index1 + len, index2), src.substring(index2 + len) };
+		return new String[] { src.substring(0, index1),
+				src.substring(index1 + len, index2),
+				src.substring(index2 + len) };
 	}
 
 	/**
 	 * Fastest Multi Fast Split. "ab..cd" would produce [ab][][cd] with '.' and
 	 * 2. It would produce [ab][.cd] with 1.
 	 */
-	public static final String[] fastSplitN(final String src, final char delim, final int n) {
-		if(n < 1) return new String[]
-			{ src };
+	public static final String[] fastSplitN(final String src, final char delim,
+			final int n) {
+		if (n < 1) {
+			return new String[] { src };
+		}
 		final String[] output = new String[n + 1];
 		int index = 0;
 		int lindex = 0;
-		for(int i = 0; i < n && index != 0; ++i) {
+		for (int i = 0; (i < n) && (index != 0); ++i) {
 			index = src.indexOf(delim, lindex);
 			output[i] = src.substring(lindex, index);
 			lindex = index + 1;
@@ -223,14 +196,16 @@ public class StringToolkit {
 	 * Fastest Multi Fast Split. "ab..cd" would produce [ab][][cd] with '.' and
 	 * 2. It would produce [ab][.cd] with 1.
 	 */
-	public static final String[] fastSplitN(final String src, final String delim, final int n) {
-		if(n < 1) return new String[]
-			{ src };
+	public static final String[] fastSplitN(final String src,
+			final String delim, final int n) {
+		if (n < 1) {
+			return new String[] { src };
+		}
 		final String[] output = new String[n + 1];
 		final int len = delim.length();
 		int index = 0;
 		int lindex = 0;
-		for(int i = 0; i < n; ++i) {
+		for (int i = 0; i < n; ++i) {
 			index = src.indexOf(delim, lindex);
 			output[i] = src.substring(lindex, index);
 			lindex = index + len;
@@ -243,18 +218,23 @@ public class StringToolkit {
 	 * Smart Fast Split. Removes null sections (length 0). "ab..cd" would
 	 * produce [ab][cd] with '.'
 	 */
-	public static final String[] smartFastSplit(final String src, final char delim) {
+	public static final String[] smartFastSplit(final String src,
+			final char delim) {
 		final ArrayList<String> output = new ArrayList<String>();
 		String tmp = "";
 		int index = 0;
 		int lindex = 0;
-		while((index = src.indexOf(delim, lindex)) != -1) {
+		while ((index = src.indexOf(delim, lindex)) != -1) {
 			tmp = src.substring(lindex, index);
-			if(tmp.length() > 0) output.add(tmp);
+			if (tmp.length() > 0) {
+				output.add(tmp);
+			}
 			lindex = index + 1;
 		}
 		tmp = src.substring(lindex);
-		if(tmp.length() > 0) output.add(tmp);
+		if (tmp.length() > 0) {
+			output.add(tmp);
+		}
 		return output.toArray(new String[output.size()]);
 	}
 
@@ -262,25 +242,66 @@ public class StringToolkit {
 	 * Smart Fast Split. Removes null sections (length 0). "ab..cd" would
 	 * produce [ab][cd] with "."
 	 */
-	public static final String[] smartFastSplit(final String src, final String delim) {
+	public static final String[] smartFastSplit(final String src,
+			final String delim) {
 		final ArrayList<String> output = new ArrayList<String>();
 		String tmp = "";
 		final int len = delim.length();
 		int index = 0;
 		int lindex = 0;
-		while((index = src.indexOf(delim, lindex)) != -1) {
+		while ((index = src.indexOf(delim, lindex)) != -1) {
 			tmp = src.substring(lindex, index);
-			if(tmp.length() > 0) output.add(tmp);
+			if (tmp.length() > 0) {
+				output.add(tmp);
+			}
 			lindex = index + len;
 		}
 		tmp = src.substring(lindex);
-		if(tmp.length() > 0) output.add(tmp);
+		if (tmp.length() > 0) {
+			output.add(tmp);
+		}
+		return output.toArray(new String[output.size()]);
+	}
+
+	/**
+	 * Split CSV data values. (Non-Regex)
+	 */
+	public static final String[] splitCSV(final String src) {
+		Iterator<Character> it = stringIterator(src);
+		final ArrayList<String> output = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		boolean qoute = false;
+		char last = '\0';
+		while (it.hasNext()) {
+			char c = it.next();
+			if ((c == '\r') || (c == '\n')) {
+				break;
+			}
+			if ((c == ',') && !qoute) {
+				output.add(sb.toString());
+				sb.setLength(0);
+			} else if (c == '"') {
+				// check if double
+				if ((last == '"') && !qoute) {
+					sb.append('"');
+				}
+				qoute = !qoute;
+			} else {
+				sb.append(c);
+			}
+			last = c;
+		}
+		if (sb.length() > 0) {
+			output.add(sb.toString());
+		}
 		return output.toArray(new String[output.size()]);
 	}
 
 	public static final Iterator<Character> stringIterator(final String string) {
 		// Ensure the error is found as soon as possible.
-		if(string == null) throw new NullPointerException();
+		if (string == null) {
+			throw new NullPointerException();
+		}
 		return new Iterator<Character>() {
 			private int index = 0;
 
@@ -295,7 +316,9 @@ public class StringToolkit {
 				 * Throw NoSuchElementException as defined by the Iterator
 				 * contract, not IndexOutOfBoundsException.
 				 */
-				if(!hasNext()) throw new NoSuchElementException();
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
 				return string.charAt(index++);
 			}
 
@@ -305,13 +328,13 @@ public class StringToolkit {
 			}
 		};
 	}
-	
+
 	public static final String unescape(String str) {
 		StringBuilder sb = new StringBuilder();
 		boolean wasEscape = false;
-		for(char c : str.toCharArray()) {
-			if(wasEscape) {
-				switch(c) {
+		for (char c : str.toCharArray()) {
+			if (wasEscape) {
+				switch (c) {
 				case '0':
 					sb.append('\0');
 					break;
@@ -344,14 +367,15 @@ public class StringToolkit {
 					sb.append(c);
 				}
 				wasEscape = false;
-			} else if(c == '\\') {
+			} else if (c == '\\') {
 				wasEscape = true;
 			} else {
 				sb.append(c);
 			}
 		}
-		if(wasEscape)
+		if (wasEscape) {
 			sb.append('\\');
+		}
 		return sb.toString();
 	}
 

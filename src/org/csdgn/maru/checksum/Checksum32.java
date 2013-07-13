@@ -26,22 +26,11 @@ import java.util.zip.Checksum;
 
 /**
  * A simple 32 bit checksum.
+ * 
  * @author Robert Maupin
  */
 public class Checksum32 implements Checksum {
 	private long sum = 0;
-
-	@Override
-	public void update(int b) {
-		sum += b;
-	}
-
-	@Override
-	public void update(byte[] b, int off, int len) {
-		for(int i=0;i<len;++i) {
-			update(b[i+off]);
-		}
-	}
 
 	@Override
 	public long getValue() {
@@ -51,5 +40,17 @@ public class Checksum32 implements Checksum {
 	@Override
 	public void reset() {
 		sum = 0;
+	}
+
+	@Override
+	public void update(byte[] b, int off, int len) {
+		for (int i = 0; i < len; ++i) {
+			update(b[i + off]);
+		}
+	}
+
+	@Override
+	public void update(int b) {
+		sum += b;
 	}
 }

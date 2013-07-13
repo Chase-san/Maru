@@ -43,15 +43,22 @@ public class BinaryToolkit {
 	 *            The target string to search
 	 * @return The start index of the substring
 	 */
-	public static int indexOf(final byte[] haystack, final byte[] needle, final int start) {
-		if(needle.length == 0) return 0;
+	public static int indexOf(final byte[] haystack, final byte[] needle,
+			final int start) {
+		if (needle.length == 0) {
+			return 0;
+		}
 		final int charTable[] = makeCharTable(needle);
 		final int offsetTable[] = makeOffsetTable(needle);
-		for(int i = needle.length - 1, j; i < haystack.length - start;) {
-			for(j = needle.length - 1; needle[j] == haystack[i + start]; --i, --j)
-				if(j == 0) return i + start;
+		for (int i = needle.length - 1, j; i < (haystack.length - start);) {
+			for (j = needle.length - 1; needle[j] == haystack[i + start]; --i, --j) {
+				if (j == 0) {
+					return i + start;
+				}
+			}
 			// i += needle.length - j; // For naive method
-			i += Math.max(offsetTable[needle.length - 1 - j], charTable[haystack[i + start]]);
+			i += Math.max(offsetTable[needle.length - 1 - j],
+					charTable[haystack[i + start]]);
 		}
 		return -1;
 	}
@@ -60,8 +67,11 @@ public class BinaryToolkit {
 	 * Is needle[p:end] a prefix of needle?
 	 */
 	private static boolean isPrefix(final byte[] needle, final int p) {
-		for(int i = p, j = 0; i < needle.length; ++i, ++j)
-			if(needle[i] != needle[j]) return false;
+		for (int i = p, j = 0; i < needle.length; ++i, ++j) {
+			if (needle[i] != needle[j]) {
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -71,10 +81,12 @@ public class BinaryToolkit {
 	private static int[] makeCharTable(final byte[] needle) {
 		final int ALPHABET_SIZE = 256;
 		final int[] table = new int[ALPHABET_SIZE];
-		for(int i = 0; i < table.length; ++i)
+		for (int i = 0; i < table.length; ++i) {
 			table[i] = needle.length;
-		for(int i = 0; i < needle.length - 1; ++i)
+		}
+		for (int i = 0; i < (needle.length - 1); ++i) {
 			table[needle[i]] = needle.length - 1 - i;
+		}
 		return table;
 	}
 
@@ -84,20 +96,23 @@ public class BinaryToolkit {
 	private static int[] makeOffsetTable(final byte[] needle) {
 		final int[] table = new int[needle.length];
 		int lastPrefixPosition = needle.length;
-		for(int i = needle.length - 1; i >= 0; --i) {
-			if(isPrefix(needle, i + 1)) lastPrefixPosition = i + 1;
-			table[needle.length - 1 - i] = lastPrefixPosition - i + needle.length - 1;
+		for (int i = needle.length - 1; i >= 0; --i) {
+			if (isPrefix(needle, i + 1)) {
+				lastPrefixPosition = i + 1;
+			}
+			table[needle.length - 1 - i] = ((lastPrefixPosition - i) + needle.length) - 1;
 		}
-		for(int i = 0; i < needle.length - 1; ++i) {
+		for (int i = 0; i < (needle.length - 1); ++i) {
 			final int slen = suffixLength(needle, i);
-			table[slen] = needle.length - 1 - i + slen;
+			table[slen] = (needle.length - 1 - i) + slen;
 		}
 		return table;
 	}
 
-	public static long packDoubleToFewerBits(final int maxBits, double maxValue, double value, final boolean hasNegative) {
+	public static long packDoubleToFewerBits(final int maxBits,
+			double maxValue, double value, final boolean hasNegative) {
 		final int total_values = (1 << maxBits) - 1;
-		if(hasNegative) {
+		if (hasNegative) {
 			value += maxValue;
 			maxValue *= 2.0D;
 		}
@@ -109,19 +124,21 @@ public class BinaryToolkit {
 	/**
 	 * Byte array based replace.
 	 */
-	public static byte[] replace(final byte[] haystack, final byte[] needle, final byte[] replacement) {
+	public static byte[] replace(final byte[] haystack, final byte[] needle,
+			final byte[] replacement) {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int start = 0;
 		int n = -1;
 		try {
-			while((n = indexOf(haystack, needle, start)) != -1) {
+			while ((n = indexOf(haystack, needle, start)) != -1) {
 				baos.write(Arrays.copyOfRange(haystack, start, n));
 				baos.write(replacement);
 				start = n + needle.length;
 			}
-			if(start < haystack.length) baos.write(Arrays.copyOfRange(haystack, start, haystack.length));
-		}
-		catch(final Exception e) {
+			if (start < haystack.length) {
+				baos.write(Arrays.copyOfRange(haystack, start, haystack.length));
+			}
+		} catch (final Exception e) {
 			// we should never ever get here
 			e.printStackTrace();
 		}
@@ -133,18 +150,23 @@ public class BinaryToolkit {
 	 */
 	private static int suffixLength(final byte[] needle, final int p) {
 		int len = 0;
-		for(int i = p, j = needle.length - 1; i >= 0 && needle[i] == needle[j]; --i, --j)
+		for (int i = p, j = needle.length - 1; (i >= 0)
+				&& (needle[i] == needle[j]); --i, --j) {
 			len += 1;
+		}
 		return len;
 	}
 
-	public static double unpackDoubleFromFewerBits(final int maxBits, final double maxValue, final long value, final boolean hasNegative) {
+	public static double unpackDoubleFromFewerBits(final int maxBits,
+			final double maxValue, final long value, final boolean hasNegative) {
 		final int total_values = (1 << maxBits) - 1;
 		double work = (double) value / (double) total_values;
-		if(hasNegative) {
+		if (hasNegative) {
 			work *= maxValue * 2.0D;
 			work -= maxValue;
-		} else work *= maxValue;
+		} else {
+			work *= maxValue;
+		}
 		return work;
 	}
 

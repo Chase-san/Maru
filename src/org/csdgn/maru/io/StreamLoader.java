@@ -32,57 +32,66 @@ import java.io.InputStream;
 public abstract class StreamLoader {
 	private static final int IO_BUFFER_SIZE = 16384;
 	private InputStream input;
-	
-	/** 
+
+	/**
 	 * @param input
 	 */
 	public StreamLoader(InputStream input) {
 		this.input = input;
 	}
-	
+
 	/**
 	 * Called when an array of bytes is read.
+	 * 
 	 * @param read
 	 * @param length
 	 */
 	public void onByteArrayRead(byte[] read, int length) {
-		for(int i=0;i < length; ++i)
+		for (int i = 0; i < length; ++i) {
 			onByteRead(read[i]);
+		}
 	}
-	
+
 	/**
 	 * Called when a byte is read.
+	 * 
 	 * @param input
 	 */
 	public abstract void onByteRead(byte input);
-	
+
 	/**
-	 * @throws IOException 
+	 * @throws IOException
 	 * 
 	 */
 	public void readAll() throws IOException {
 		if (input != null) {
-			final BufferedInputStream input = new BufferedInputStream(this.input);
+			final BufferedInputStream input = new BufferedInputStream(
+					this.input);
 			final byte[] reader = new byte[IO_BUFFER_SIZE];
 			int r = 0;
-			while ((r = input.read(reader, 0, IO_BUFFER_SIZE)) != -1)
+			while ((r = input.read(reader, 0, IO_BUFFER_SIZE)) != -1) {
 				onByteArrayRead(reader, r);
-		} 
+			}
+		}
 	}
-	
+
 	/**
-	 * @throws IOException 
+	 * @throws IOException
 	 * 
 	 */
 	public void readAllAndClose() throws IOException {
-		if (input != null) try {
-			final BufferedInputStream input = new BufferedInputStream(this.input);
-			final byte[] reader = new byte[IO_BUFFER_SIZE];
-			int r = 0;
-			while ((r = input.read(reader, 0, IO_BUFFER_SIZE)) != -1)
-				onByteArrayRead(reader, r);
-		} finally {
-			this.input.close();
+		if (input != null) {
+			try {
+				final BufferedInputStream input = new BufferedInputStream(
+						this.input);
+				final byte[] reader = new byte[IO_BUFFER_SIZE];
+				int r = 0;
+				while ((r = input.read(reader, 0, IO_BUFFER_SIZE)) != -1) {
+					onByteArrayRead(reader, r);
+				}
+			} finally {
+				input.close();
+			}
 		}
 	}
 }

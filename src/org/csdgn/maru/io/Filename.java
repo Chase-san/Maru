@@ -27,71 +27,73 @@ import java.io.File;
 /**
  * 
  * @author Robert Maupin
- *
+ * 
  */
 public class Filename {
 	private String dir;
 	private String name;
 	private String ext;
-	
+
 	public Filename(File file) {
 		this(file.getAbsolutePath());
 	}
-	
+
 	public Filename(String file) {
 		dir = ext = "";
 		name = file.replace('\\', '/');
-		
+
 		int sp = name.lastIndexOf('/');
-		
-		if(sp != -1) {
-			dir = name.substring(0,sp+1);
-			name = name.substring(sp+1);
+
+		if (sp != -1) {
+			dir = name.substring(0, sp + 1);
+			name = name.substring(sp + 1);
 		}
-		
+
 		int extp = name.lastIndexOf('.');
-		
-		if(extp != -1) {
-			ext = name.substring(extp+1);
-			name = name.substring(0,extp);
+
+		if (extp != -1) {
+			ext = name.substring(extp + 1);
+			name = name.substring(0, extp);
 		}
 	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setExt(String ext) {
-		this.ext = ext;
-	}
-	
-	public String getExt() {
-		return ext;
-	}
-	
-	public void setDirectory(String dir) {
-		this.dir = dir;
-	}
-	
+
 	public String getDirectory() {
 		return dir;
 	}
-	
+
+	public String getExt() {
+		return ext;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setDirectory(String dir) {
+		this.dir = dir;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public void setNameIsDirectory() {
-		if(name.length() == 0)
+		if (name.length() == 0) {
 			return;
+		}
 		dir += name + "/";
 		name = "";
 	}
-	
+
 	public File toFile() {
 		return new File(toString());
 	}
-	
+
+	@Override
 	public String toString() {
 		return dir + name + "." + ext;
 	}

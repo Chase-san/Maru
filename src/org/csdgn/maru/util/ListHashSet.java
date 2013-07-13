@@ -56,20 +56,23 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 		@Override
 		public E next() {
 			final int i = cursor;
-			if(i >= list.size()) throw new NoSuchElementException();
+			if (i >= list.size()) {
+				throw new NoSuchElementException();
+			}
 			cursor = i + 1;
 			return ListHashSet.this.get(lastRet = i);
 		}
 
 		@Override
 		public void remove() {
-			if(lastRet < 0) throw new IllegalStateException();
+			if (lastRet < 0) {
+				throw new IllegalStateException();
+			}
 			try {
 				ListHashSet.this.remove(lastRet);
 				cursor = lastRet;
 				lastRet = -1;
-			}
-			catch(final IndexOutOfBoundsException ex) {
+			} catch (final IndexOutOfBoundsException ex) {
 				throw new ConcurrentModificationException();
 			}
 		}
@@ -91,8 +94,7 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 				ListHashSet.this.add(i, e);
 				cursor = i + 1;
 				lastRet = -1;
-			}
-			catch(final IndexOutOfBoundsException ex) {
+			} catch (final IndexOutOfBoundsException ex) {
 				throw new ConcurrentModificationException();
 			}
 		}
@@ -110,7 +112,9 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 		@Override
 		public E previous() {
 			final int i = cursor - 1;
-			if(i < 0) throw new NoSuchElementException();
+			if (i < 0) {
+				throw new NoSuchElementException();
+			}
 			cursor = i;
 			return ListHashSet.this.get(lastRet = i);
 		}
@@ -122,11 +126,12 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 
 		@Override
 		public void set(final E e) {
-			if(lastRet < 0) throw new IllegalStateException();
+			if (lastRet < 0) {
+				throw new IllegalStateException();
+			}
 			try {
 				ListHashSet.this.set(lastRet, e);
-			}
-			catch(final IndexOutOfBoundsException ex) {
+			} catch (final IndexOutOfBoundsException ex) {
 				throw new ConcurrentModificationException();
 			}
 		}
@@ -141,22 +146,29 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 
 	@Override
 	public boolean add(final E o) {
-		if(this.set.add(o)) return this.list.add(o);
-		else return false;
+		if (this.set.add(o)) {
+			return this.list.add(o);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public void add(final int index, final E element) {
-		if(this.set.add(element)) list.add(index, element);
+		if (this.set.add(element)) {
+			list.add(index, element);
+		}
 	}
 
 	@Override
 	public boolean addAll(final Collection<? extends E> c) {
 		boolean changed = false;
 		final Iterator<? extends E> i = c.iterator();
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			final E element = i.next();
-			if(this.add(element)) changed = true;
+			if (this.add(element)) {
+				changed = true;
+			}
 		}
 		return changed;
 	}
@@ -166,9 +178,9 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 		boolean changed = false;
 		int insertIndex = index;
 		final Iterator<? extends E> i = c.iterator();
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			final E element = i.next();
-			if(this.set.add(element)) {
+			if (this.set.add(element)) {
 				this.list.add(insertIndex++, element);
 				changed = true;
 			}
@@ -194,7 +206,8 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 
 	@Override
 	public boolean equals(final Object other) {
-		return other instanceof ListHashSet && this.list.equals(((ListHashSet<?>) other).list);
+		return (other instanceof ListHashSet)
+				&& this.list.equals(((ListHashSet<?>) other).list);
 	}
 
 	@Override
@@ -234,39 +247,49 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 
 	@Override
 	public ListIterator<E> listIterator(final int index) {
-		if(index < 0 || index > list.size()) throw new IndexOutOfBoundsException("Index: " + index);
+		if ((index < 0) || (index > list.size())) {
+			throw new IndexOutOfBoundsException("Index: " + index);
+		}
 		return new ListItr(index);
 	}
 
 	@Override
 	public E remove(final int index) {
 		final E element = this.list.remove(index);
-		if(element != null) this.set.remove(element);
+		if (element != null) {
+			this.set.remove(element);
+		}
 		return element;
 	}
 
 	@Override
 	public boolean remove(final Object o) {
-		if(this.set.remove(o)) {
+		if (this.set.remove(o)) {
 			this.list.remove(o);
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean removeAll(final Collection<?> c) {
-		if(this.set.removeAll(c)) {
+		if (this.set.removeAll(c)) {
 			this.list.removeAll(c);
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean retainAll(final Collection<?> c) {
-		if(this.set.retainAll(c)) {
+		if (this.set.retainAll(c)) {
 			this.list.retainAll(c);
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

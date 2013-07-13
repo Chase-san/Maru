@@ -18,8 +18,125 @@ import java.util.Set;
  * @author Chase
  */
 public class Initialization implements Map<String, String> {
+	/**
+	 * Supports multiline sections names. Supports escaped [ and ] in section
+	 * names. Uses = and : as key/value seperators. Supports escaped = and : in
+	 * keys. It trims the start and ends of section names, keys and values.
+	 * However it does support quoted values. It supports ; and # as comments,
+	 * they must be on their own line, otherwise treated as part of whatever
+	 * (key/value/section). Blank lines are not an issue and are ignored, as is
+	 * all other whitespace outside of quoted values. Supports all unicode
+	 * characters in keys, sections and values. Supports standard Java escape
+	 * sequences.
+	 * 
+	 * @author Chase
+	 * 
+	 */
+	private class IniParser {
+		StringBuilder sb = new StringBuilder();
+		IniParserMode mode = IniParserMode.UNKNOWN;
+		char qoute = '\0';
+		String key = null;
+
+		private void process(final char chr) {
+			// lexer + parser
+			switch (mode) {
+			case UNKNOWN:
+				// skip whitespace till we find something
+				if (Character.isWhitespace(chr)) {
+					break;
+				}
+				// section
+				if (chr == '[') {
+					mode = IniParserMode.SECTION;
+				} else if ((chr == ';') || (chr == '#')) {
+					mode = IniParserMode.COMMENT;
+				} else {
+					sb.append(chr);
+					mode = IniParserMode.KEY;
+				}
+				break;
+			case KEY:
+				if ((chr == '\n') || (chr == '\r')) {
+					// blah, we have no choice but to ignore it
+					sb.setLength(0);
+					mode = IniParserMode.UNKNOWN;
+					break;
+				}
+				if ((chr == '=') || (chr == ':')) {
+					if (sb.charAt(sb.length() - 1) == '\\') {
+						sb.setCharAt(sb.length() - 1, chr);
+						break;
+					}
+					key = StringUtils.unescape(sb.toString().trim());
+					sb.setLength(0);
+					mode = IniParserMode.VALUE;
+					break;
+				}
+				sb.append(chr);
+				break;
+			case QUOTED_VALUE:
+				if (chr == qoute) {
+					if (sb.charAt(sb.length() - 1) == '\\') {
+						sb.setCharAt(sb.length() - 1, chr);
+						break;
+					}
+					put(key, StringUtils.unescape(sb.toString()));
+					sb.setLength(0);
+					mode = IniParserMode.UNKNOWN;
+					break;
+				}
+				sb.append(chr);
+				break;
+			case VALUE:
+				if ((chr == '\n') || (chr == '\r')) {
+					put(key, StringUtils.unescape(sb.toString().trim()));
+					sb.setLength(0);
+					mode = IniParserMode.UNKNOWN;
+					break;
+				}
+				if ((chr == '\'') || (chr == '"')) {
+					sb.setLength(0);
+					qoute = chr;
+					mode = IniParserMode.QUOTED_VALUE;
+					break;
+				}
+				sb.append(chr);
+				break;
+			case COMMENT:
+				if ((chr == '\n') || (chr == '\r')) {
+					mode = IniParserMode.UNKNOWN;
+				}
+				break;
+			case SECTION:
+				if ((chr == '[') && (sb.charAt(sb.length() - 1) == '\\')) {
+					sb.setCharAt(sb.length() - 1, chr);
+					break;
+				}
+				if (chr == ']') {
+					if (sb.charAt(sb.length() - 1) == '\\') {
+						sb.setCharAt(sb.length() - 1, chr);
+						break;
+					}
+					putSection(StringUtils.unescape(sb.toString().trim()));
+					sb.setLength(0);
+					mode = IniParserMode.UNKNOWN;
+					break;
+				}
+				sb.append(chr);
+				break;
+			}
+		}
+	}
+
+	private enum IniParserMode {
+		UNKNOWN, KEY, VALUE, COMMENT, SECTION, QUOTED_VALUE
+	}
+
 	private static final int IO_BUFFER_SIZE = 8192;
+
 	private final HashMap<String, HashMap<String, String>> data;
+
 	private HashMap<String, String> current;
 
 	public Initialization() {
@@ -90,7 +207,9 @@ public class Initialization implements Map<String, String> {
 	 * default value if the section does not contain the given key.
 	 */
 	public String get(final Object key, final String defaultValue) {
-		if(current.containsKey(key)) return current.get(key);
+		if (current.containsKey(key)) {
+			return current.get(key);
+		}
 		return defaultValue;
 	}
 
@@ -99,10 +218,11 @@ public class Initialization implements Map<String, String> {
 	 * the given key does not exist, or if the value is not a valid double.
 	 */
 	public Double getDouble(final Object key) {
-		if(current.containsKey(key)) try {
-			return Double.parseDouble(current.get(key));
-		}
-		catch(final NumberFormatException e) {
+		if (current.containsKey(key)) {
+			try {
+				return Double.parseDouble(current.get(key));
+			} catch (final NumberFormatException e) {
+			}
 		}
 		return null;
 	}
@@ -113,11 +233,12 @@ public class Initialization implements Map<String, String> {
 	 * value is not a valid double.
 	 */
 	public double getDouble(final Object key, final double defaultValue) {
-		if(current.containsKey(key)) try {
-			return Double.parseDouble(current.get(key));
-		}
-		catch(final NumberFormatException e) {
-			e.printStackTrace();
+		if (current.containsKey(key)) {
+			try {
+				return Double.parseDouble(current.get(key));
+			} catch (final NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		return defaultValue;
 	}
@@ -127,10 +248,11 @@ public class Initialization implements Map<String, String> {
 	 * the given key does not exist, or if the value is not a valid integer.
 	 */
 	public Integer getInteger(final Object key) {
-		if(current.containsKey(key)) try {
-			return Integer.parseInt(current.get(key));
-		}
-		catch(final NumberFormatException e) {
+		if (current.containsKey(key)) {
+			try {
+				return Integer.parseInt(current.get(key));
+			} catch (final NumberFormatException e) {
+			}
 		}
 		return null;
 	}
@@ -141,10 +263,11 @@ public class Initialization implements Map<String, String> {
 	 * value is not a valid integer.
 	 */
 	public int getInteger(final Object key, final int defaultValue) {
-		if(current.containsKey(key)) try {
-			return Integer.parseInt(current.get(key));
-		}
-		catch(final NumberFormatException e) {
+		if (current.containsKey(key)) {
+			try {
+				return Integer.parseInt(current.get(key));
+			} catch (final NumberFormatException e) {
+			}
 		}
 		return defaultValue;
 	}
@@ -176,9 +299,11 @@ public class Initialization implements Map<String, String> {
 		// with slow reading if they decided to pass us a FileReader
 		final char[] buffer = new char[IO_BUFFER_SIZE];
 		int r = 0;
-		while((r = reader.read(buffer, 0, IO_BUFFER_SIZE)) != -1)
-			for(int i = 0; i < r; ++i)
+		while ((r = reader.read(buffer, 0, IO_BUFFER_SIZE)) != -1) {
+			for (int i = 0; i < r; ++i) {
 				loader.process(buffer[i]);
+			}
+		}
 		loader.process('\n');
 	}
 
@@ -203,7 +328,7 @@ public class Initialization implements Map<String, String> {
 	 */
 	public void putSection(final String sectionName) {
 		current = data.get(sectionName);
-		if(current == null) {
+		if (current == null) {
 			current = new HashMap<String, String>();
 			data.put(sectionName, current);
 		}
@@ -226,7 +351,9 @@ public class Initialization implements Map<String, String> {
 	 */
 	public boolean removeSection(final String sectionName) {
 		final boolean retValue = data.containsKey(sectionName);
-		if(retValue) data.remove(sectionName);
+		if (retValue) {
+			data.remove(sectionName);
+		}
 		return retValue;
 	}
 
@@ -261,9 +388,11 @@ public class Initialization implements Map<String, String> {
 	 */
 	@Override
 	public int size() {
-		if(current == null) return 0;
+		if (current == null) {
+			return 0;
+		}
 		return current.size();
-	}
+	};
 
 	/**
 	 * Returns the value set for the current section.
@@ -271,115 +400,5 @@ public class Initialization implements Map<String, String> {
 	@Override
 	public Collection<String> values() {
 		return null;
-	}
-	
-	private enum IniParserMode {
-		UNKNOWN,
-		KEY,
-		VALUE,
-		COMMENT,
-		SECTION,
-		QUOTED_VALUE
-	};
-	
-	/**
-	 * Supports multiline sections names. Supports escaped [ and ] in section names. 
-	 * Uses = and : as key/value seperators. Supports escaped = and : in keys. 
-	 * It trims the start and ends of section names, keys and values. However it does support quoted values.
-	 * It supports ; and # as comments, they must be on their own line, otherwise treated as part of whatever (key/value/section).
-	 * Blank lines are not an issue and are ignored, as is all other whitespace outside of quoted values.
-	 * Supports all unicode characters in keys, sections and values. Supports standard Java escape sequences.
-	 * @author Chase
-	 *
-	 */
-	private class IniParser {
-		StringBuilder sb = new StringBuilder();
-		IniParserMode mode = IniParserMode.UNKNOWN;
-		char qoute = '\0';
-		String key = null;
-
-		private void process(final char chr) {
-			// lexer + parser
-			switch(mode) {
-			case UNKNOWN:
-				// skip whitespace till we find something
-				if(Character.isWhitespace(chr)) break;
-				// section
-				if(chr == '[') mode = IniParserMode.SECTION;
-				else if(chr == ';' || chr == '#') mode = IniParserMode.COMMENT;
-				else {
-					sb.append(chr);
-					mode = IniParserMode.KEY;
-				}
-				break;
-			case KEY:
-				if(chr == '\n' || chr == '\r') {
-					// blah, we have no choice but to ignore it
-					sb.setLength(0);
-					mode = IniParserMode.UNKNOWN;
-					break;
-				}
-				if(chr == '=' || chr == ':') {
-					if(sb.charAt(sb.length() - 1) == '\\') {
-						sb.setCharAt(sb.length() - 1, chr);
-						break;
-					}
-					key = StringUtils.unescape(sb.toString().trim());
-					sb.setLength(0);
-					mode = IniParserMode.VALUE;
-					break;
-				}
-				sb.append(chr);
-				break;
-			case QUOTED_VALUE:
-				if(chr == qoute) {
-					if(sb.charAt(sb.length() - 1) == '\\') {
-						sb.setCharAt(sb.length() - 1, chr);
-						break;
-					}
-					put(key, StringUtils.unescape(sb.toString()));
-					sb.setLength(0);
-					mode = IniParserMode.UNKNOWN;
-					break;
-				}
-				sb.append(chr);
-				break;
-			case VALUE:
-				if(chr == '\n' || chr == '\r') {
-					put(key, StringUtils.unescape(sb.toString().trim()));
-					sb.setLength(0);
-					mode = IniParserMode.UNKNOWN;
-					break;
-				}
-				if(chr == '\'' || chr == '"') {
-					sb.setLength(0);
-					qoute = chr;
-					mode = IniParserMode.QUOTED_VALUE;
-					break;
-				}
-				sb.append(chr);
-				break;
-			case COMMENT:
-				if(chr == '\n' || chr == '\r') mode = IniParserMode.UNKNOWN;
-				break;
-			case SECTION:
-				if(chr == '[' && sb.charAt(sb.length() - 1) == '\\') {
-					sb.setCharAt(sb.length() - 1, chr);
-					break;
-				}
-				if(chr == ']') {
-					if(sb.charAt(sb.length() - 1) == '\\') {
-						sb.setCharAt(sb.length() - 1, chr);
-						break;
-					}
-					putSection(StringUtils.unescape(sb.toString().trim()));
-					sb.setLength(0);
-					mode = IniParserMode.UNKNOWN;
-					break;
-				}
-				sb.append(chr);
-				break;
-			}
-		}
 	}
 }
