@@ -39,7 +39,8 @@ public class DirectoryModel extends Observable {
 	private File[] files;
 
 	/**
-	 * just checks if the directory has been set, if not, throw an exception
+	 * Just checks if the directory has been set, if not, it throws an
+	 * exception.
 	 */
 	private void checkDirectoryState() {
 		if (files == null) {
@@ -56,6 +57,8 @@ public class DirectoryModel extends Observable {
 		if (filter != null) {
 			files = dir.listFiles(filter);
 		}
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
