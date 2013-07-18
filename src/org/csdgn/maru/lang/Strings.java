@@ -1,4 +1,4 @@
-package org.csdgn.maru.util;
+package org.csdgn.maru.lang;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  * 
  * @author Chase
  */
-public class StringUtils {
+public class Strings {
 	/**
 	 * This method escapes special characters in the given string.
 	 * 
@@ -102,7 +102,7 @@ public class StringUtils {
 		}
 		// consume two characters at a time...
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Iterator<Character> it = StringUtils.stringIterator(hex);
+		Iterator<Character> it = Strings.stringIterator(hex);
 		while (it.hasNext()) {
 			baos.write(hexToByte(it.next(), it.next()));
 		}

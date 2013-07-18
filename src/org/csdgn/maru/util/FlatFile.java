@@ -29,6 +29,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.csdgn.maru.lang.Strings;
+
 /**
  * Class for a simple Flat File Database format. The FlatFile class should not
  * be used for serialization, and only primitive or simple types should be used
@@ -99,7 +101,7 @@ public class FlatFile {
 		// first row
 		for (int r = 0; r < rows; ++r) {
 			for (int c = 0; c < columns; ++c) {
-				data[c] = StringUtils.unescape(readToken(reader));
+				data[c] = Strings.unescape(readToken(reader));
 			}
 			ff.addRow(data);
 		}
@@ -205,7 +207,7 @@ public class FlatFile {
 					if (!first) {
 						pw.print('\t');
 					}
-					tmp = StringUtils.escape(String.valueOf(obj), false);
+					tmp = Strings.escape(String.valueOf(obj), false);
 					pw.print(tmp);
 					first = false;
 				}

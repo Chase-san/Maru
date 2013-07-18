@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.csdgn.maru.lang.Strings;
+
 /**
  * A class for windows like configuration (.ini) files.
  * 
@@ -68,7 +70,7 @@ public class Initialization implements Map<String, String> {
 						sb.setCharAt(sb.length() - 1, chr);
 						break;
 					}
-					key = StringUtils.unescape(sb.toString().trim());
+					key = Strings.unescape(sb.toString().trim());
 					sb.setLength(0);
 					mode = IniParserMode.VALUE;
 					break;
@@ -81,7 +83,7 @@ public class Initialization implements Map<String, String> {
 						sb.setCharAt(sb.length() - 1, chr);
 						break;
 					}
-					put(key, StringUtils.unescape(sb.toString()));
+					put(key, Strings.unescape(sb.toString()));
 					sb.setLength(0);
 					mode = IniParserMode.UNKNOWN;
 					break;
@@ -90,7 +92,7 @@ public class Initialization implements Map<String, String> {
 				break;
 			case VALUE:
 				if (chr == '\n' || chr == '\r') {
-					put(key, StringUtils.unescape(sb.toString().trim()));
+					put(key, Strings.unescape(sb.toString().trim()));
 					sb.setLength(0);
 					mode = IniParserMode.UNKNOWN;
 					break;
@@ -118,7 +120,7 @@ public class Initialization implements Map<String, String> {
 						sb.setCharAt(sb.length() - 1, chr);
 						break;
 					}
-					putSection(StringUtils.unescape(sb.toString().trim()));
+					putSection(Strings.unescape(sb.toString().trim()));
 					sb.setLength(0);
 					mode = IniParserMode.UNKNOWN;
 					break;

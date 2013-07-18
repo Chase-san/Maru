@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package org.csdgn.maru.util;
+package org.csdgn.maru.lang;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * 
  * @author Robert Maupin
  */
-public class ByteArrayUtils {
+public class Bytes {
 	public static byte[] add(byte[] array, byte element) {
 		if (array == null) {
 			return null;
