@@ -158,10 +158,17 @@ public class ByteArrayUtils {
 		return -1;
 	}
 
+	/**
+	 * DANGER Untested
+	 */
+	
 	public static int lastIndexOf(byte[] array, byte[] value) {
 		return lastIndexOf(array, value, 0);
 	}
 
+	/**
+	 * DANGER Untested
+	 */
 	public static int lastIndexOf(byte[] array, byte[] value, int start) {
 		if (array == null || value == null) {
 			return -1;
