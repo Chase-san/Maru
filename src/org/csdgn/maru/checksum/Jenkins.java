@@ -7,9 +7,9 @@ public class Jenkins implements Checksum {
 
 	public int getIntegerValue() {
 		int hash = this.hash;
-		hash += (hash << 3);
-		hash ^= (hash >> 11);
-		hash += (hash << 15);
+		hash += hash << 3;
+		hash ^= hash >> 11;
+		hash += hash << 15;
 		return hash;
 	}
 
@@ -25,17 +25,17 @@ public class Jenkins implements Checksum {
 
 	@Override
 	public void update(byte[] b, int off, int len) {
-		for (int i = off; i < (off + len); ++i) {
+		for (int i = off; i < off + len; ++i) {
 			hash += b[i] & 0xFF;
-			hash += (hash << 10);
-			hash ^= (hash >> 6);
+			hash += hash << 10;
+			hash ^= hash >> 6;
 		}
 	}
 
 	@Override
 	public void update(int b) {
 		hash += b & 0xFF;
-		hash += (hash << 10);
-		hash ^= (hash >> 6);
+		hash += hash << 10;
+		hash ^= hash >> 6;
 	}
 }

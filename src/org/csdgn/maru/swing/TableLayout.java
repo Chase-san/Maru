@@ -157,8 +157,8 @@ public class TableLayout implements LayoutManager, LayoutManager2 {
 			/*
 			 * Determine the size and offset of the cell!
 			 */
-			int x = insets.left + (cell.x * hgap);
-			int y = insets.top + (cell.y * vgap);
+			int x = insets.left + cell.x * hgap;
+			int y = insets.top + cell.y * vgap;
 			int width = 0;
 			int height = 0;
 
@@ -233,14 +233,14 @@ public class TableLayout implements LayoutManager, LayoutManager2 {
 			if (cell.x == -1) {
 				cell.x = 0;
 				if (last != null) {
-					cell.x = last.x + (last.colspan - 1) + cell.offsetX;
+					cell.x = last.x + last.colspan - 1 + cell.offsetX;
 				}
 			}
 
 			if (cell.y == -1) {
 				cell.y = 0;
 				if (last != null) {
-					cell.y = last.y + (last.rowspan - 1) + cell.offsetY;
+					cell.y = last.y + last.rowspan - 1 + cell.offsetY;
 				}
 			}
 
@@ -248,12 +248,12 @@ public class TableLayout implements LayoutManager, LayoutManager2 {
 			 * This is used to determine the number of columns and rows we will
 			 * have in the end.
 			 */
-			if ((cell.x + (cell.colspan - 1)) > maxX) {
-				maxX = cell.x + (cell.colspan - 1);
+			if (cell.x + cell.colspan - 1 > maxX) {
+				maxX = cell.x + cell.colspan - 1;
 			}
 
-			if ((cell.y + (cell.rowspan - 1)) > maxY) {
-				maxY = cell.y + (cell.rowspan - 1);
+			if (cell.y + cell.rowspan - 1 > maxY) {
+				maxY = cell.y + cell.rowspan - 1;
 			}
 
 			cells.add(last = cell);
@@ -350,9 +350,9 @@ public class TableLayout implements LayoutManager, LayoutManager2 {
 
 		Table table = layoutTable(parent);
 
-		int width = (hgap * (table.cols.length - 1)) + insets.left
+		int width = hgap * (table.cols.length - 1) + insets.left
 				+ insets.right;
-		int height = (vgap * (table.rows.length - 1)) + insets.top
+		int height = vgap * (table.rows.length - 1) + insets.top
 				+ insets.bottom;
 
 		/*

@@ -206,7 +206,7 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 
 	@Override
 	public boolean equals(final Object other) {
-		return (other instanceof ListHashSet)
+		return other instanceof ListHashSet
 				&& this.list.equals(((ListHashSet<?>) other).list);
 	}
 
@@ -247,7 +247,7 @@ public class ListHashSet<E> implements List<E>, Set<E> {
 
 	@Override
 	public ListIterator<E> listIterator(final int index) {
-		if ((index < 0) || (index > list.size())) {
+		if (index < 0 || index > list.size()) {
 			throw new IndexOutOfBoundsException("Index: " + index);
 		}
 		return new ListItr(index);

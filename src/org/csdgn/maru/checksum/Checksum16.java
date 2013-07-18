@@ -34,7 +34,7 @@ public class Checksum16 implements Checksum {
 
 	@Override
 	public long getValue() {
-		return (~(sum & 0xFFFF) + 1) & 0xFFFF;
+		return ~(sum & 0xFFFF) + 1 & 0xFFFF;
 	}
 
 	@Override

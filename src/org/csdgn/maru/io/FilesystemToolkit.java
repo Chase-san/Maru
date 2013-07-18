@@ -312,7 +312,7 @@ public class FilesystemToolkit {
 	 */
 	public static void pipe(InputStream istream, OutputStream ostream)
 			throws IOException {
-		if ((ostream != null) && (istream != null)) {
+		if (ostream != null && istream != null) {
 			/*
 			 * This is the fastest method I know for reading from an
 			 * indeterminate stream. So fast in fact, that it pars fairly well
@@ -347,7 +347,7 @@ public class FilesystemToolkit {
 	 */
 	public static void pipeAndClose(InputStream istream, OutputStream ostream)
 			throws IOException {
-		if ((ostream != null) && (istream != null)) {
+		if (ostream != null && istream != null) {
 			try {
 				/*
 				 * This is the fastest method I know for reading from an

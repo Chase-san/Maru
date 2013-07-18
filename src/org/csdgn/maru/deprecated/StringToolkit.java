@@ -85,7 +85,7 @@ public class StringToolkit {
 			char c = it.next();
 			if (c == '\r') {
 				sb.append(lineEnding);
-				if (it.hasNext() && ((c = it.next()) != '\n')) {
+				if (it.hasNext() && (c = it.next()) != '\n') {
 					sb.append(c);
 				}
 				continue;
@@ -183,7 +183,7 @@ public class StringToolkit {
 		final String[] output = new String[n + 1];
 		int index = 0;
 		int lindex = 0;
-		for (int i = 0; (i < n) && (index != 0); ++i) {
+		for (int i = 0; i < n && index != 0; ++i) {
 			index = src.indexOf(delim, lindex);
 			output[i] = src.substring(lindex, index);
 			lindex = index + 1;
@@ -274,15 +274,15 @@ public class StringToolkit {
 		char last = '\0';
 		while (it.hasNext()) {
 			char c = it.next();
-			if ((c == '\r') || (c == '\n')) {
+			if (c == '\r' || c == '\n') {
 				break;
 			}
-			if ((c == ',') && !qoute) {
+			if (c == ',' && !qoute) {
 				output.add(sb.toString());
 				sb.setLength(0);
 			} else if (c == '"') {
 				// check if double
-				if ((last == '"') && !qoute) {
+				if (last == '"' && !qoute) {
 					sb.append('"');
 				}
 				qoute = !qoute;

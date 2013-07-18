@@ -50,7 +50,7 @@ public class BitSet {
 	public BitSet(final int length) {
 		this.length = length;
 		int sW = length >> 6;
-		if ((sW << 6) != length) {
+		if (sW << 6 != length) {
 			++sW;
 		}
 		set = new long[sW];
@@ -58,7 +58,7 @@ public class BitSet {
 	}
 
 	public void and(final BitSet bs) {
-		for (int i = 0; (i < set.length) && (i < bs.set.length); ++i) {
+		for (int i = 0; i < set.length && i < bs.set.length; ++i) {
 			set[i] &= bs.set[i];
 		}
 		mask();
@@ -66,7 +66,7 @@ public class BitSet {
 
 	public boolean at(final int i) {
 		final int s = i >> 6;
-		return ((set[s] >>> (i - (s << 6))) & 1) == 1;
+		return (set[s] >>> i - (s << 6) & 1) == 1;
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class BitSet {
 	}
 
 	public void or(final BitSet bs) {
-		for (int i = 0; (i < set.length) && (i < bs.set.length); ++i) {
+		for (int i = 0; i < set.length && i < bs.set.length; ++i) {
 			set[i] |= bs.set[i];
 		}
 		mask();
@@ -111,7 +111,7 @@ public class BitSet {
 
 	public void set(final int i) {
 		final int s = i >> 6;
-		set[s] |= 1L << (i - (s << 6));
+		set[s] |= 1L << i - (s << 6);
 	}
 
 	public BitSet snip(final int index0, final int index1) {
@@ -119,7 +119,7 @@ public class BitSet {
 			return snip(index1, index0);
 		}
 		mask();
-		final BitSet set = new BitSet((index1 - index0) + 1);
+		final BitSet set = new BitSet(index1 - index0 + 1);
 		for (int i = index0; i <= index1; ++i) {
 			final int n = i - index0;
 			if (at(i)) {
@@ -132,7 +132,7 @@ public class BitSet {
 	public BigInteger toBigInteger() {
 		mask();
 		BigInteger bi = BigInteger.ZERO;
-		for (int i = 0; i < (set.length << 6); ++i) {
+		for (int i = 0; i < set.length << 6; ++i) {
 			if (at(i)) {
 				bi = bi.setBit(i);
 			}
@@ -174,11 +174,11 @@ public class BitSet {
 
 	public void unset(final int i) {
 		final int s = i >> 6;
-		set[s] &= ~(1L << (i - (s << 6)));
+		set[s] &= ~(1L << i - (s << 6));
 	}
 
 	public void xor(final BitSet bs) {
-		for (int i = 0; (i < set.length) && (i < bs.set.length); ++i) {
+		for (int i = 0; i < set.length && i < bs.set.length; ++i) {
 			set[i] ^= bs.set[i];
 		}
 		mask();

@@ -50,7 +50,7 @@ public class BinaryToolkit {
 		}
 		final int charTable[] = makeCharTable(needle);
 		final int offsetTable[] = makeOffsetTable(needle);
-		for (int i = needle.length - 1, j; i < (haystack.length - start);) {
+		for (int i = needle.length - 1, j; i < haystack.length - start;) {
 			for (j = needle.length - 1; needle[j] == haystack[i + start]; --i, --j) {
 				if (j == 0) {
 					return i + start;
@@ -84,7 +84,7 @@ public class BinaryToolkit {
 		for (int i = 0; i < table.length; ++i) {
 			table[i] = needle.length;
 		}
-		for (int i = 0; i < (needle.length - 1); ++i) {
+		for (int i = 0; i < needle.length - 1; ++i) {
 			table[needle[i]] = needle.length - 1 - i;
 		}
 		return table;
@@ -100,11 +100,11 @@ public class BinaryToolkit {
 			if (isPrefix(needle, i + 1)) {
 				lastPrefixPosition = i + 1;
 			}
-			table[needle.length - 1 - i] = ((lastPrefixPosition - i) + needle.length) - 1;
+			table[needle.length - 1 - i] = lastPrefixPosition - i + needle.length - 1;
 		}
-		for (int i = 0; i < (needle.length - 1); ++i) {
+		for (int i = 0; i < needle.length - 1; ++i) {
 			final int slen = suffixLength(needle, i);
-			table[slen] = (needle.length - 1 - i) + slen;
+			table[slen] = needle.length - 1 - i + slen;
 		}
 		return table;
 	}
@@ -150,8 +150,8 @@ public class BinaryToolkit {
 	 */
 	private static int suffixLength(final byte[] needle, final int p) {
 		int len = 0;
-		for (int i = p, j = needle.length - 1; (i >= 0)
-				&& (needle[i] == needle[j]); --i, --j) {
+		for (int i = p, j = needle.length - 1; i >= 0
+				&& needle[i] == needle[j]; --i, --j) {
 			len += 1;
 		}
 		return len;

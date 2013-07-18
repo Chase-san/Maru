@@ -79,7 +79,7 @@ public class FlatFile {
 		}
 
 		private void setAll(Object[] data) {
-			for (int i = 0; (i < data.length) && (i < this.data.length); ++i) {
+			for (int i = 0; i < data.length && i < this.data.length; ++i) {
 				this.data[i] = data[i];
 			}
 		}
@@ -106,13 +106,14 @@ public class FlatFile {
 
 		return ff;
 	}
+
 	private static final String readToken(Reader reader) throws IOException {
 		// why use a StreamTokenizer when I don't need to do any COMPLEX
 		// tokenization
 		StringBuilder sb = new StringBuilder();
 		int r = -1;
 		while ((r = reader.read()) != -1) {
-			if ((r == '\t') || (r == '\n')) {
+			if (r == '\t' || r == '\n') {
 				break;
 			}
 			sb.append((char) r);

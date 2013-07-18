@@ -45,7 +45,7 @@ public class BitMap {
 	}
 
 	public void and(final BitMap bm) {
-		for (int i = 0; (i < map.length) && (i < bm.map.length); ++i) {
+		for (int i = 0; i < map.length && i < bm.map.length; ++i) {
 			map[i].and(bm.map[i]);
 		}
 	}
@@ -73,8 +73,8 @@ public class BitMap {
 			Point b = null;
 			int v = Integer.MAX_VALUE;
 			for (final Point p : open) {
-				final int h = ((x1 - p.x) * (x1 - p.x))
-						+ ((y1 - p.y) * (y1 - p.y));
+				final int h = (x1 - p.x) * (x1 - p.x)
+						+ (y1 - p.y) * (y1 - p.y);
 				if (h < v) {
 					b = p;
 					v = h;
@@ -83,7 +83,7 @@ public class BitMap {
 			if (b == null) {
 				return false;
 			}
-			if ((b.x == x1) && (b.y == y1)) {
+			if (b.x == x1 && b.y == y1) {
 				return true;
 			}
 			for (final Point p : pathN(b)) {
@@ -123,7 +123,7 @@ public class BitMap {
 	}
 
 	public void or(final BitMap bm) {
-		for (int i = 0; (i < map.length) && (i < bm.map.length); ++i) {
+		for (int i = 0; i < map.length && i < bm.map.length; ++i) {
 			map[i].or(bm.map[i]);
 		}
 	}
@@ -145,7 +145,7 @@ public class BitMap {
 				return snip(x1, y0, x0, y1);
 			}
 		}
-		final BitMap map = new BitMap((y1 - y0) + 1);
+		final BitMap map = new BitMap(y1 - y0 + 1);
 		for (int y = y0; y <= y1; ++y) {
 			final int y2 = y - y0;
 			map.map[y2] = this.map[y].snip(x0, x1);
@@ -167,10 +167,10 @@ public class BitMap {
 	}
 
 	public boolean valid(final int x, final int y) {
-		if ((x < 0) || (y < 0)) {
+		if (x < 0 || y < 0) {
 			return false;
 		}
-		if ((y >= map.length) || (x >= map[y].length())) {
+		if (y >= map.length || x >= map[y].length()) {
 			return false;
 		}
 		return true;
@@ -181,7 +181,7 @@ public class BitMap {
 	}
 
 	public void xor(final BitMap bm) {
-		for (int i = 0; (i < map.length) && (i < bm.map.length); ++i) {
+		for (int i = 0; i < map.length && i < bm.map.length; ++i) {
 			map[i].xor(bm.map[i]);
 		}
 	}

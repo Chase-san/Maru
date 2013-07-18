@@ -23,7 +23,7 @@ public class FowlerNollVo implements Checksum {
 
 	@Override
 	public void update(byte[] b, int off, int len) {
-		for (int i = off; i < (off + len); ++i) {
+		for (int i = off; i < off + len; ++i) {
 			hash ^= b[i];
 			hash *= FNVPrime;
 		}

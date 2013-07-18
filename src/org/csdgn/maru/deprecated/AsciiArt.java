@@ -455,7 +455,7 @@ public class AsciiArt {
 		double tmpHeight = image.getHeight()
 				* (newWidth / (double) image.getWidth());
 		double bestDistance = Double.POSITIVE_INFINITY;
-		for (double ys = 0; ys < (tmpHeight * 2); ys += fontHeight) {
+		for (double ys = 0; ys < tmpHeight * 2; ys += fontHeight) {
 			double dist = Math.abs(tmpHeight - ys);
 			if (dist < bestDistance) {
 				bestDistance = dist;
@@ -489,7 +489,7 @@ public class AsciiArt {
 		int[] count = new int[9];
 
 		for (int i = 0; i < samples.length; ++i) {
-			int index = ((int) ((i / w) / hs) * 3) + ((int) ((i % w) / ws) % 3);
+			int index = (int) (i / w / hs) * 3 + (int) (i % w / ws) % 3;
 			data[index] += samples[i];
 			count[index] += 255;
 		}

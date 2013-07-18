@@ -22,7 +22,7 @@ public class DelayHelper {
 		if (ms < 0L) {
 			ms = 0L;
 		}
-		int nso = (int) (off - (mso * 1000000L));
+		int nso = (int) (off - mso * 1000000L);
 		int ns = delayNS - nso;
 		if (ns < 0) {
 			ns = 0;
@@ -36,7 +36,7 @@ public class DelayHelper {
 
 	public void setTargetFPS(float fps) {
 		double delay = 1000.0D / fps;
-		delayMS = ((int) delay);
+		delayMS = (int) delay;
 		delay -= delayMS;
 		delayNS = (int) (delay * 1000000.0D);
 		System.out.println(delayMS + " " + delayNS);

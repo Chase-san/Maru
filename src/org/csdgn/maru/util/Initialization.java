@@ -49,7 +49,7 @@ public class Initialization implements Map<String, String> {
 				// section
 				if (chr == '[') {
 					mode = IniParserMode.SECTION;
-				} else if ((chr == ';') || (chr == '#')) {
+				} else if (chr == ';' || chr == '#') {
 					mode = IniParserMode.COMMENT;
 				} else {
 					sb.append(chr);
@@ -57,13 +57,13 @@ public class Initialization implements Map<String, String> {
 				}
 				break;
 			case KEY:
-				if ((chr == '\n') || (chr == '\r')) {
+				if (chr == '\n' || chr == '\r') {
 					// blah, we have no choice but to ignore it
 					sb.setLength(0);
 					mode = IniParserMode.UNKNOWN;
 					break;
 				}
-				if ((chr == '=') || (chr == ':')) {
+				if (chr == '=' || chr == ':') {
 					if (sb.charAt(sb.length() - 1) == '\\') {
 						sb.setCharAt(sb.length() - 1, chr);
 						break;
@@ -89,13 +89,13 @@ public class Initialization implements Map<String, String> {
 				sb.append(chr);
 				break;
 			case VALUE:
-				if ((chr == '\n') || (chr == '\r')) {
+				if (chr == '\n' || chr == '\r') {
 					put(key, StringUtils.unescape(sb.toString().trim()));
 					sb.setLength(0);
 					mode = IniParserMode.UNKNOWN;
 					break;
 				}
-				if ((chr == '\'') || (chr == '"')) {
+				if (chr == '\'' || chr == '"') {
 					sb.setLength(0);
 					qoute = chr;
 					mode = IniParserMode.QUOTED_VALUE;
@@ -104,12 +104,12 @@ public class Initialization implements Map<String, String> {
 				sb.append(chr);
 				break;
 			case COMMENT:
-				if ((chr == '\n') || (chr == '\r')) {
+				if (chr == '\n' || chr == '\r') {
 					mode = IniParserMode.UNKNOWN;
 				}
 				break;
 			case SECTION:
-				if ((chr == '[') && (sb.charAt(sb.length() - 1) == '\\')) {
+				if (chr == '[' && sb.charAt(sb.length() - 1) == '\\') {
 					sb.setCharAt(sb.length() - 1, chr);
 					break;
 				}

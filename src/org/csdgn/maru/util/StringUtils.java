@@ -92,7 +92,7 @@ public class StringUtils {
 			n1 -= 32;
 		}
 
-		return (n0 << 4) | n1;
+		return n0 << 4 | n1;
 	}
 
 	public static byte[] hexToBytes(String hex) {
