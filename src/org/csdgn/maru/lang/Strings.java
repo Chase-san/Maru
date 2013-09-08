@@ -151,6 +151,19 @@ public class Strings {
 		output.add(src.substring(lindex));
 		return output.toArray(new String[output.size()]);
 	}
+	
+	/**
+	 * Returns the number of times the given character occurs within the source string.
+	 */
+	public static final int count(final String src, final char chr) {
+		int count = 0;
+		int index = 0;
+		while ((index = src.indexOf(chr, index)) != -1) {
+			++index;
+			++count;
+		}
+		return count;
+	}
 
 	public static final Iterator<Character> stringIterator(final String string) {
 		// Ensure the error is found as soon as possible.
