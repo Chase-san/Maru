@@ -15,6 +15,7 @@ public class HashBiMap<K, V> implements Map<K, V> {
 	}
 	
 	public HashBiMap(K[] theKeys, V[] theVals) {
+		initalize();
 		for(int i = 0; i < theKeys.length; ++i) {
 			put(theKeys[i],theVals[i]);
 		}
