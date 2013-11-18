@@ -33,7 +33,7 @@ import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.*;
 
-import org.csdgn.maru.io.FilesystemToolkit;
+import org.csdgn.maru.io.IOToolkit;
 
 /**
  * This package may be removed without warning!
@@ -51,7 +51,7 @@ public class ZipToolkit {
 			InputStream input) throws IOException {
 		ZipEntry e = new ZipEntry(name);
 		zip.putNextEntry(e);
-		FilesystemToolkit.pipeAndClose(input, zip);
+		IOToolkit.pipeAndClose(input, zip);
 		zip.closeEntry();
 	}
 
@@ -114,7 +114,7 @@ public class ZipToolkit {
 			output.putNextEntry(e);
 			if (!e.isDirectory()) {
 				// fastest pipe in the west
-				FilesystemToolkit.pipeAndClose(input.getInputStream(e), output);
+				IOToolkit.pipeAndClose(input.getInputStream(e), output);
 			}
 			output.closeEntry();
 		}
@@ -127,7 +127,7 @@ public class ZipToolkit {
 
 	public static final byte[] getBytes(ZipFile zip, String entry)
 			throws IOException {
-		return FilesystemToolkit.getAndClose(getStream(zip, entry));
+		return IOToolkit.getAndClose(getStream(zip, entry));
 	}
 
 	public static final InputStream getStream(ZipFile zip, String entry)
@@ -137,13 +137,13 @@ public class ZipToolkit {
 
 	public static final String getString(ZipFile zip, String entry)
 			throws IOException {
-		return FilesystemToolkit.getAndClose(new InputStreamReader(getStream(
+		return IOToolkit.getAndClose(new InputStreamReader(getStream(
 				zip, entry)));
 	}
 
 	public static final String getString(ZipFile zip, String entry,
 			String charset) throws IOException {
-		return FilesystemToolkit.getAndClose(new InputStreamReader(getStream(
+		return IOToolkit.getAndClose(new InputStreamReader(getStream(
 				zip, entry), charset));
 	}
 }
