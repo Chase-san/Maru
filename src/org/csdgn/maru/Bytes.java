@@ -98,6 +98,48 @@ public class Bytes {
 		System.arraycopy(array, 0, array2, 0, array.length);
 		return array2;
 	}
+	
+	private static int hexToByte(char c1, char c2) {
+		// nibble to numeric
+		int n0 = c1 - 48;
+		int n1 = c2 - 48;
+		if (n0 > 9) {
+			n0 -= 7;
+		}
+		if (n0 > 15) {
+			n0 -= 32;
+		}
+		if (n1 > 9) {
+			n1 -= 7;
+		}
+		if (n1 > 15) {
+			n1 -= 32;
+		}
+
+		return n0 << 4 | n1;
+	}
+
+	public static byte[] hexToBytes(String hex) {
+		hex = hex.trim();
+		if (hex.charAt(1) == 'x') {
+			hex = hex.substring(2);
+		}
+		// consume two characters at a time...
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Iterator<Character> it = Strings.getIterator(hex);
+		while (it.hasNext()) {
+			baos.write(hexToByte(it.next(), it.next()));
+		}
+		return baos.toByteArray();
+	}
+	
+	public static String bytesToHex(byte[] array) {
+		StringBuilder sb = new StringBuilder();
+		for(byte b : array) {
+			sb.append(String.format("%02x",b));
+		}
+		return sb.toString();
+	}
 
 	public static boolean contains(byte[] array, byte value) {
 		return indexOf(array, value) != -1;
@@ -282,30 +324,25 @@ public class Bytes {
 		return subarray(array, start, array.length);
 	}
 
-	/**
-	 * [start,end)
+	/** 
 	 * 
-	 * @param start
-	 *            Inclusive
-	 * @param end
-	 *            Exclusive
 	 */
-	public static byte[] subarray(byte[] array, int start, int end) {
+	public static byte[] subarray(byte[] array, int start, int length) {
 		if (array == null) {
 			return null;
 		}
 		if (start < 0) {
 			start = 0;
 		}
+		int end = start+length;
 		if (end > array.length) {
 			end = array.length;
 		}
-		final int newSize = end - start;
-		if (newSize <= 0) {
+		if (length <= 0) {
 			return new byte[0];
 		}
-		final byte[] subarray = new byte[newSize];
-		System.arraycopy(array, start, subarray, 0, newSize);
+		final byte[] subarray = new byte[length];
+		System.arraycopy(array, start, subarray, 0, length);
 		return subarray;
 	}
 

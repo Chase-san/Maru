@@ -97,39 +97,7 @@ public class Strings {
 		return sb.toString();
 	}
 
-	private static int hexToByte(char c1, char c2) {
-		// nibble to numeric
-		int n0 = c1 - 48;
-		int n1 = c2 - 48;
-		if (n0 > 9) {
-			n0 -= 7;
-		}
-		if (n0 > 15) {
-			n0 -= 32;
-		}
-		if (n1 > 9) {
-			n1 -= 7;
-		}
-		if (n1 > 15) {
-			n1 -= 32;
-		}
-
-		return n0 << 4 | n1;
-	}
-
-	public static byte[] hexToBytes(String hex) {
-		hex = hex.trim();
-		if (hex.charAt(1) == 'x') {
-			hex = hex.substring(2);
-		}
-		// consume two characters at a time...
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Iterator<Character> it = Strings.getIterator(hex);
-		while (it.hasNext()) {
-			baos.write(hexToByte(it.next(), it.next()));
-		}
-		return baos.toByteArray();
-	}
+	
 	
 	public static String repeat(String string, int count) {
 		StringBuilder sb = new StringBuilder();
