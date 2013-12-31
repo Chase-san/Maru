@@ -6,6 +6,7 @@ Maru features a number of helpful packages and classes to make working in Java m
 
 __org.csdgn.maru__
  - ByteConverter, Bytes, Files, Strings
+
 - __.checksum__
  - 8,16,32 bit generic checksums, CRC16, FNV, Jenkins
 - __.crypto__
