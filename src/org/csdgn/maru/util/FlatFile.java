@@ -29,7 +29,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.csdgn.maru.lang.Strings;
+import org.csdgn.maru.Strings;
 
 /**
  * Class for a simple Flat File Database format. The FlatFile class should not
@@ -90,7 +90,7 @@ public class FlatFile {
 	/**
 	 * Loads a flat file database.
 	 */
-	public static FlatFile load(Reader reader) throws IOException {
+	public static FlatFile read(Reader reader) throws IOException {
 		// header stuff
 		int rows = Integer.parseInt(readToken(reader));
 		int columns = Integer.parseInt(readToken(reader));
@@ -110,8 +110,7 @@ public class FlatFile {
 	}
 
 	private static final String readToken(Reader reader) throws IOException {
-		// why use a StreamTokenizer when I don't need to do any COMPLEX
-		// tokenization
+		// why use a StreamTokenizer when I don't need to do anything COMPLEX?
 		StringBuilder sb = new StringBuilder();
 		int r = -1;
 		while ((r = reader.read()) != -1) {
@@ -191,7 +190,6 @@ public class FlatFile {
 		// they can put their own header on it if they want
 		// pretty much all flat file DB are the same anyway
 		// which is pretty surprising since there is no standard
-		// pw.print("CFFDB 1.0\n");
 
 		// write the number of rows
 		pw.print(getSize());

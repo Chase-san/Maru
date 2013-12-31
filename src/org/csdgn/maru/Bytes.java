@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Robert Maupin
+ * Copyright (c) 2013-2014 Robert Maupin
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -20,8 +20,10 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package org.csdgn.maru.lang;
+package org.csdgn.maru;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -43,7 +45,17 @@ public class Bytes {
 		return array2;
 	}
 
-	public static final Iterator<Byte> byteArrayIterator(final byte[] array) {
+	public static final Iterable<Byte> getIterable(final byte[] array) {
+		return new Iterable<Byte>() {
+			@Override
+			public Iterator<Byte> iterator() {
+				return getIterator(array);
+			}
+
+		};
+	}
+
+	public static final Iterator<Byte> getIterator(final byte[] array) {
 		// Ensure the error is found as soon as possible.
 		if (array == null) {
 			return null;
@@ -85,25 +97,6 @@ public class Bytes {
 		final byte[] array2 = new byte[array.length];
 		System.arraycopy(array, 0, array2, 0, array.length);
 		return array2;
-	}
-
-	public static byte[] concat(byte[] array1, byte[] array2) {
-		if (array1 == null) {
-			return clone(array2);
-		}
-		if (array1.length == 0) {
-			return clone(array2);
-		}
-		if (array2 == null) {
-			return clone(array1);
-		}
-		if (array2.length == 0) {
-			return clone(array1);
-		}
-		final byte[] array3 = new byte[array1.length + array2.length];
-		System.arraycopy(array1, 0, array3, 0, array1.length);
-		System.arraycopy(array2, 0, array3, array1.length, array2.length);
-		return array3;
 	}
 
 	public static boolean contains(byte[] array, byte value) {
@@ -162,6 +155,25 @@ public class Bytes {
 		return -1;
 	}
 
+	public static byte[] join(byte[] array1, byte[] array2) {
+		if (array1 == null) {
+			return clone(array2);
+		}
+		if (array1.length == 0) {
+			return clone(array2);
+		}
+		if (array2 == null) {
+			return clone(array1);
+		}
+		if (array2.length == 0) {
+			return clone(array1);
+		}
+		final byte[] array3 = new byte[array1.length + array2.length];
+		System.arraycopy(array1, 0, array3, 0, array1.length);
+		System.arraycopy(array2, 0, array3, array1.length, array2.length);
+		return array3;
+	}
+
 	public static int lastIndexOf(byte[] array, byte value) {
 		return lastIndexOf(array, value, 0);
 	}
@@ -187,7 +199,7 @@ public class Bytes {
 	/**
 	 * DANGER Untested
 	 */
-	
+
 	public static int lastIndexOf(byte[] array, byte[] value) {
 		return lastIndexOf(array, value, 0);
 	}
@@ -218,6 +230,9 @@ public class Bytes {
 		return -1;
 	}
 
+	/**
+	 * Add given byte to the end of this array.
+	 */
 	public static byte[] push(byte[] array, byte element) {
 		if (array == null) {
 			return null;
@@ -226,6 +241,29 @@ public class Bytes {
 		System.arraycopy(array, 0, array2, 1, array.length);
 		array2[0] = element;
 		return array2;
+	}
+
+	/**
+	 * Byte array based replace.
+	 */
+	public static byte[] replace(final byte[] haystack, final byte[] needle, final byte[] replacement) {
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int start = 0;
+		int n = -1;
+		try {
+			while ((n = indexOf(haystack, needle, start)) != -1) {
+				baos.write(Arrays.copyOfRange(haystack, start, n));
+				baos.write(replacement);
+				start = n + needle.length;
+			}
+			if (start < haystack.length) {
+				baos.write(Arrays.copyOfRange(haystack, start, haystack.length));
+			}
+		} catch (final Exception e) {
+			// we should never ever get here
+			throw new RuntimeException(e.getMessage(), e.getCause());
+		}
+		return baos.toByteArray();
 	}
 
 	public static byte[] reverse(byte[] array) {
@@ -271,7 +309,13 @@ public class Bytes {
 		return subarray;
 	}
 
-	public static byte[] wrap(byte element) {
-		return new byte[] { element };
+	/**
+	 * Equivalent to <code>new byte[] { element, ... }</code>
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	public static byte[] wrap(byte... elements) {
+		return elements;
 	}
 }

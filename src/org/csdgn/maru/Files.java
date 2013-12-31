@@ -20,7 +20,7 @@
  *    3. This notice may not be removed or altered from any source
  *    distribution.
  */
-package org.csdgn.maru.io;
+package org.csdgn.maru;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -38,14 +38,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 
 /**
  * A number of useful static methods to make working with IO much easier.
  * 
- * @author Chase
+ * Many of the methods purposely ignore exceptions and return a sentinel value on failure.
+ * 
+ * @author Robert Maupin
  */
-public class IOToolkit {
+public class Files {
 	private static final int IO_BUFFER_SIZE = 16384;
 
 	/**
@@ -231,8 +234,7 @@ public class IOToolkit {
 		try {
 			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
 			return ois.readObject();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 		} finally {
 			if (ois != null) {
 				try {
@@ -256,8 +258,7 @@ public class IOToolkit {
 		try {
 			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
 			return ois.readObject();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 		} finally {
 			if (ois != null) {
 				try {
@@ -524,7 +525,7 @@ public class IOToolkit {
 	 *            The object to store.
 	 * @return <code>true</code> on success, <code>false</code> otherwise.
 	 */
-	public static boolean setFileObject(File file, Object obj) {
+	public static boolean setFileObject(File file, Serializable obj) {
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
@@ -552,7 +553,7 @@ public class IOToolkit {
 	 *            The object to store.
 	 * @return <code>true</code> on success, <code>false</code> otherwise.
 	 */
-	public static boolean setFileObject(String filename, Object obj) {
+	public static boolean setFileObject(String filename, Serializable obj) {
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
@@ -570,7 +571,11 @@ public class IOToolkit {
 		}
 		return false;
 	}
+	
+	public static final String getPathString(File file) {
+		return file.getParent();
+	}
 
-	private IOToolkit() {
+	private Files() {
 	}
 }

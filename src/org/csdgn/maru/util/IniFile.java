@@ -3,14 +3,17 @@ package org.csdgn.maru.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.csdgn.maru.lang.Strings;
+import org.csdgn.maru.Strings;
 
 /**
  * A class for windows like configuration (.ini) files.
@@ -19,7 +22,7 @@ import org.csdgn.maru.lang.Strings;
  * 
  * @author Chase
  */
-public class Initialization implements Map<String, String> {
+public class IniFile implements Map<String, String> {
 	/**
 	 * Supports multiline sections names. Supports escaped [ and ] in section
 	 * names. Uses = and : as key/value seperators. Supports escaped = and : in
@@ -141,7 +144,7 @@ public class Initialization implements Map<String, String> {
 
 	private HashMap<String, String> current;
 
-	public Initialization() {
+	public IniFile() {
 		data = new HashMap<String, HashMap<String, String>>();
 		// global section
 		current = new HashMap<String, String>();
@@ -290,25 +293,6 @@ public class Initialization implements Map<String, String> {
 		return null;
 	}
 
-	public void load(final InputStream stream) throws IOException {
-		// if you want to specify the charset, use the load(Reader) method
-		load(new InputStreamReader(stream, Charset.defaultCharset()));
-	}
-
-	public void load(final Reader reader) throws IOException {
-		final IniParser loader = new IniParser();
-		// we need to read it quickly, don't keep them waiting
-		// with slow reading if they decided to pass us a FileReader
-		final char[] buffer = new char[IO_BUFFER_SIZE];
-		int r = 0;
-		while ((r = reader.read(buffer, 0, IO_BUFFER_SIZE)) != -1) {
-			for (int i = 0; i < r; ++i) {
-				loader.process(buffer[i]);
-			}
-		}
-		loader.process('\n');
-	}
-
 	/**
 	 * Puts the given key value pair into the current section.
 	 */
@@ -334,6 +318,25 @@ public class Initialization implements Map<String, String> {
 			current = new HashMap<String, String>();
 			data.put(sectionName, current);
 		}
+	}
+
+	public void read(final InputStream stream) throws IOException {
+		// if you want to specify the charset, use the load(Reader) method
+		read(new InputStreamReader(stream, Charset.defaultCharset()));
+	}
+
+	public void read(final Reader reader) throws IOException {
+		final IniParser loader = new IniParser();
+		// we need to read it quickly, don't keep them waiting
+		// with slow reading if they decided to pass us a FileReader
+		final char[] buffer = new char[IO_BUFFER_SIZE];
+		int r = 0;
+		while ((r = reader.read(buffer, 0, IO_BUFFER_SIZE)) != -1) {
+			for (int i = 0; i < r; ++i) {
+				loader.process(buffer[i]);
+			}
+		}
+		loader.process('\n');
 	}
 
 	/**
@@ -394,7 +397,7 @@ public class Initialization implements Map<String, String> {
 			return 0;
 		}
 		return current.size();
-	};
+	}
 
 	/**
 	 * Returns the value set for the current section.
@@ -402,5 +405,40 @@ public class Initialization implements Map<String, String> {
 	@Override
 	public Collection<String> values() {
 		return null;
+	}
+
+	public void write(final OutputStream stream) throws IOException {
+		write(new OutputStreamWriter(stream, Charset.defaultCharset()));
+	};
+
+	public void write(final Writer writer) throws IOException {
+		// we have to put the null section first!
+
+		if (data.containsKey(null)) {
+			for (Entry<String, String> e : data.get(null).entrySet()) {
+				writer.write(e.getKey());
+				writer.write('=');
+				writer.write(e.getValue());
+				writer.write(System.lineSeparator());
+			}
+		}
+
+		for (String section : data.keySet()) {
+			if (section == null) {
+				continue;
+			}
+
+			writer.write('[');
+			writer.write(section);
+			writer.write(']');
+			writer.write(System.lineSeparator());
+
+			for (Entry<String, String> e : data.get(section).entrySet()) {
+				writer.write(e.getKey());
+				writer.write('=');
+				writer.write(e.getValue());
+				writer.write(System.lineSeparator());
+			}
+		}
 	}
 }
